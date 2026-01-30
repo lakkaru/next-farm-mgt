@@ -815,6 +815,12 @@
     "showingCount": "Showing {{shown}} of {{total}} varieties",
     "monthsUnit": "months",
     "daysUnit": "days",
+    "types": {
+      "shortDuration": "Short Duration",
+      "mediumDuration": "Medium Duration",
+      "longDuration": "Long Duration",
+      "longDurationPhotoperiod": "Long Duration (Photoperiod sensitive)"
+    },
     "colors": {
       "white": "White",
       "red": "Red"

@@ -129,6 +129,38 @@ export function PaddyVarietiesContent() {
   const hasActiveFilters =
     searchTerm || selectedType || selectedGrainShape || selectedGrainColor
 
+  // Translation mappings for filter values
+  const getTranslatedType = (type: string): string => {
+    const typeMap: Record<string, string> = {
+      'Short Duration': 'paddyVarieties.types.shortDuration',
+      'Medium Duration': 'paddyVarieties.types.mediumDuration',
+      'Long Duration': 'paddyVarieties.types.longDuration',
+      'Long Duration (Photoperiod sensitive)': 'paddyVarieties.types.longDurationPhotoperiod',
+    }
+    return t(typeMap[type] || type)
+  }
+
+  const getTranslatedGrainShape = (shape: string): string => {
+    const shapeMap: Record<string, string> = {
+      'Long Slender': 'paddyVarieties.grainSizes.long_slender',
+      'Extra Long Slender': 'paddyVarieties.grainSizes.extra_long_slender',
+      'Long Medium': 'paddyVarieties.grainSizes.long_medium',
+      'Intermediate Medium': 'paddyVarieties.grainSizes.intermediate_medium',
+      'Short Round': 'paddyVarieties.grainSizes.short_round',
+      'Intermediate Bold': 'paddyVarieties.grainSizes.intermediate_bold',
+      'Short Oblong': 'paddyVarieties.grainSizes.short_oblong',
+    }
+    return t(shapeMap[shape] || shape)
+  }
+
+  const getTranslatedColor = (color: string): string => {
+    const colorMap: Record<string, string> = {
+      'White': 'paddyVarieties.colors.white',
+      'Red': 'paddyVarieties.colors.red',
+    }
+    return t(colorMap[color] || color)
+  }
+
   if (error && !loading) {
     return (
       <div className="space-y-6">
@@ -185,7 +217,7 @@ export function PaddyVarietiesContent() {
                   <option value="">{t('common.all')}</option>
                   {uniqueTypes.map((type) => (
                     <option key={type} value={type}>
-                      {type}
+                      {getTranslatedType(type)}
                     </option>
                   ))}
                 </select>
@@ -202,7 +234,7 @@ export function PaddyVarietiesContent() {
                   <option value="">{t('common.all')}</option>
                   {uniqueGrainShapes.map((shape) => (
                     <option key={shape} value={shape}>
-                      {shape}
+                      {getTranslatedGrainShape(shape)}
                     </option>
                   ))}
                 </select>
@@ -219,7 +251,7 @@ export function PaddyVarietiesContent() {
                   <option value="">{t('common.all')}</option>
                   {uniqueGrainColors.map((color) => (
                     <option key={color} value={color}>
-                      {color}
+                      {getTranslatedColor(color)}
                     </option>
                   ))}
                 </select>

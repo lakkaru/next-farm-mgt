@@ -904,6 +904,12 @@
       "suitable_for_water_logging_conditions": "ජලය තැබීමේ තත්ත්වයන්ට සුදුසු.",
       "drought_escape_variety": "වියළි කාලයට උචිත ප්‍රභේදය."
     },
+    "types": {
+      "shortDuration": "කෙටි කාල සීමාවිතයි",
+      "mediumDuration": "මධ්‍යම කාල සීමාවිතයි",
+      "longDuration": "දිගු කාල සීමාවිතයි",
+      "longDurationPhotoperiod": "දිගු කාල සීමාවිතයි (ආලෝක සංවේදනීයතා)"
+    },
     "grainSizes": {
       "long_medium": "නාඩු",
       "intermediate_medium": "නාඩු",
