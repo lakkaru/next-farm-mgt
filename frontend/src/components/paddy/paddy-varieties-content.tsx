@@ -12,6 +12,29 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { paddyVarietyAPI } from '@/lib/api'
 import { Search, AlertCircle, Leaf } from 'lucide-react'
 
+// Translation mappings for filter values (constant, outside component)
+const typeMap: Record<string, string> = {
+  'Short Duration': 'paddyVarieties.types.shortDuration',
+  'Medium Duration': 'paddyVarieties.types.mediumDuration',
+  'Long Duration': 'paddyVarieties.types.longDuration',
+  'Long Duration (Photoperiod sensitive)': 'paddyVarieties.types.longDurationPhotoperiod',
+}
+
+const shapeMap: Record<string, string> = {
+  'Long Slender': 'paddyVarieties.grainSizes.long_slender',
+  'Extra Long Slender': 'paddyVarieties.grainSizes.extra_long_slender',
+  'Long Medium': 'paddyVarieties.grainSizes.long_medium',
+  'Intermediate Medium': 'paddyVarieties.grainSizes.intermediate_medium',
+  'Short Round': 'paddyVarieties.grainSizes.short_round',
+  'Intermediate Bold': 'paddyVarieties.grainSizes.intermediate_bold',
+  'Short Oblong': 'paddyVarieties.grainSizes.short_oblong',
+}
+
+const colorMap: Record<string, string> = {
+  'White': 'paddyVarieties.colors.white',
+  'Red': 'paddyVarieties.colors.red',
+}
+
 interface PaddyVariety {
   _id: string
   name: string
@@ -129,35 +152,15 @@ export function PaddyVarietiesContent() {
   const hasActiveFilters =
     searchTerm || selectedType || selectedGrainShape || selectedGrainColor
 
-  // Translation mappings for filter values
   const getTranslatedType = (type: string): string => {
-    const typeMap: Record<string, string> = {
-      'Short Duration': 'paddyVarieties.types.shortDuration',
-      'Medium Duration': 'paddyVarieties.types.mediumDuration',
-      'Long Duration': 'paddyVarieties.types.longDuration',
-      'Long Duration (Photoperiod sensitive)': 'paddyVarieties.types.longDurationPhotoperiod',
-    }
     return t(typeMap[type] || type)
   }
 
   const getTranslatedGrainShape = (shape: string): string => {
-    const shapeMap: Record<string, string> = {
-      'Long Slender': 'paddyVarieties.grainSizes.long_slender',
-      'Extra Long Slender': 'paddyVarieties.grainSizes.extra_long_slender',
-      'Long Medium': 'paddyVarieties.grainSizes.long_medium',
-      'Intermediate Medium': 'paddyVarieties.grainSizes.intermediate_medium',
-      'Short Round': 'paddyVarieties.grainSizes.short_round',
-      'Intermediate Bold': 'paddyVarieties.grainSizes.intermediate_bold',
-      'Short Oblong': 'paddyVarieties.grainSizes.short_oblong',
-    }
     return t(shapeMap[shape] || shape)
   }
 
   const getTranslatedColor = (color: string): string => {
-    const colorMap: Record<string, string> = {
-      'White': 'paddyVarieties.colors.white',
-      'Red': 'paddyVarieties.colors.red',
-    }
     return t(colorMap[color] || color)
   }
 
@@ -382,12 +385,12 @@ export function PaddyVarietiesContent() {
                       <div className="flex flex-wrap gap-1">
                         {variety.characteristics?.grainQuality?.grainShape && (
                           <Badge variant="outline" className="text-xs">
-                            {variety.characteristics.grainQuality.grainShape}
+                            {getTranslatedGrainShape(variety.characteristics.grainQuality.grainShape)}
                           </Badge>
                         )}
                         {variety.characteristics?.grainQuality?.pericarpColour && (
                           <Badge variant="outline" className="text-xs">
-                            {variety.characteristics.grainQuality.pericarpColour}
+                            {getTranslatedColor(variety.characteristics.grainQuality.pericarpColour)}
                           </Badge>
                         )}
                       </div>
