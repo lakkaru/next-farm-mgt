@@ -36,23 +36,13 @@ type AuthAction =
   | { type: 'CLEAR_ERROR' }
 
 const getInitialState = (): AuthState => {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token')
-    if (token) {
-      return {
-        user: null,
-        token: token,
-        isAuthenticated: true,
-        isLoading: true,
-        error: null,
-      }
-    }
-  }
+  // Always return a consistent initial state for server/client matching
+  // The actual token will be loaded in useEffect
   return {
     user: null,
     token: null,
     isAuthenticated: false,
-    isLoading: false,
+    isLoading: true, // Start as loading to prevent flashes
     error: null,
   }
 }
@@ -143,11 +133,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+    // Initialize auth state from localStorage after mount
+    const token = localStorage.getItem('token')
+    
     if (token && !state.user) {
       loadUser()
-    } else if (!token && state.isAuthenticated) {
-      dispatch({ type: 'AUTH_ERROR', payload: 'No token found' })
+    } else if (!token) {
+      // Mark loading as complete if no token
+      dispatch({ type: 'CLEAR_ERROR' })
+      // Don't dispatch error, just update isLoading
+      dispatch({ type: 'LOGOUT' })
     }
   }, [loadUser, state.user, state.isAuthenticated])
 

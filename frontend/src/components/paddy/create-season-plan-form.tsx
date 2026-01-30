@@ -18,7 +18,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 import { DatePicker } from '@/components/ui/date-picker'
 import { seasonPlanAPI, paddyVarietyAPI, farmAPI } from '@/lib/api'
-import { ArrowLeft, AlertCircle, Calendar, Info } from 'lucide-react'
+import { ArrowLeft, AlertCircle, Info } from 'lucide-react'
 import Link from 'next/link'
 
 interface Farm {
@@ -101,7 +101,7 @@ export function CreateSeasonPlanForm() {
     } finally {
       setDataLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     loadData()
@@ -238,8 +238,6 @@ export function CreateSeasonPlanForm() {
     try {
       setLoading(true)
       
-      const selectedFarm = farms.find(f => f._id === formData.farmId)
-      
       const payload = {
         farmId: formData.farmId,
         season: formData.season,
@@ -266,9 +264,10 @@ export function CreateSeasonPlanForm() {
       setTimeout(() => {
         router.push('/paddy/season-plans')
       }, 2000)
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create season plan'
       console.error('Error creating season plan:', error)
-      setError(error.response?.data?.message || 'Failed to create season plan')
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }

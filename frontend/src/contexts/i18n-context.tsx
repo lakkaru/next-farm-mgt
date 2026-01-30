@@ -46,9 +46,13 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | undefined>(undefined)
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState(i18n.language || 'si')
+  const [language, setLanguage] = useState('si')
 
   useEffect(() => {
+    // Only update language after client mount to prevent hydration issues
+    const detectedLng = i18n.language || 'si'
+    setLanguage(detectedLng)
+
     const handleLanguageChange = (lng: string) => {
       setLanguage(lng)
     }

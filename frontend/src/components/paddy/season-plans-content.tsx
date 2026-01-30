@@ -16,7 +16,6 @@ import {
   MapPin,
   Droplets,
   Sprout,
-  TrendingUp,
   AlertCircle,
   X,
 } from 'lucide-react'
@@ -231,7 +230,7 @@ export function SeasonPlansContent() {
                         >
                           {plan.season.toUpperCase()}
                         </Badge>
-                        <Badge variant={getStatusColor(plan.status) as any}>
+                        <Badge variant={getStatusColor(plan.status) as 'secondary' | 'default' | 'success' | 'destructive'}>
                           {plan.status.toUpperCase()}
                         </Badge>
                       </div>
