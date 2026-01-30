@@ -39,6 +39,28 @@ export function PaddyVarietiesContent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedType, setSelectedType] = useState<string>('')
+  const [selectedGrainShape, setSelectedGrainShape] = useState<string>('')
+  const [selectedGrainColor, setSelectedGrainColor] = useState<string>('')
+
+  // Get unique grain shapes and colors from varieties
+  const uniqueGrainShapes = Array.from(
+    new Set(
+      varieties
+        .filter((v) => v.characteristics?.grainQuality?.grainShape)
+        .map((v) => v.characteristics?.grainQuality?.grainShape)
+    )
+  )
+
+  const uniqueGrainColors = Array.from(
+    new Set(
+      varieties
+        .filter((v) => v.characteristics?.grainQuality?.pericarpColour)
+        .map((v) => v.characteristics?.grainQuality?.pericarpColour)
+    )
+  )
+
+  const uniqueTypes = Array.from(new Set(varieties.map((v) => v.type)))
 
   const loadVarieties = useCallback(async () => {
     try {
@@ -63,21 +85,49 @@ export function PaddyVarietiesContent() {
   }, [loadVarieties])
 
   useEffect(() => {
-    if (!searchTerm.trim()) {
-      setFilteredVarieties(varieties)
-    } else {
-      const filtered = varieties.filter((variety) => {
-        const searchLower = searchTerm.toLowerCase()
-        return (
+    let filtered = varieties
+
+    // Filter by search term (name)
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase()
+      filtered = filtered.filter(
+        (variety) =>
           variety.name.toLowerCase().includes(searchLower) ||
-          variety.popularName?.toLowerCase().includes(searchLower) ||
-          variety.type.toLowerCase().includes(searchLower) ||
-          variety.duration.toLowerCase().includes(searchLower)
-        )
-      })
-      setFilteredVarieties(filtered)
+          variety.popularName?.toLowerCase().includes(searchLower)
+      )
     }
-  }, [searchTerm, varieties])
+
+    // Filter by type (age/duration)
+    if (selectedType) {
+      filtered = filtered.filter((variety) => variety.type === selectedType)
+    }
+
+    // Filter by grain shape (size)
+    if (selectedGrainShape) {
+      filtered = filtered.filter(
+        (variety) => variety.characteristics?.grainQuality?.grainShape === selectedGrainShape
+      )
+    }
+
+    // Filter by grain color
+    if (selectedGrainColor) {
+      filtered = filtered.filter(
+        (variety) => variety.characteristics?.grainQuality?.pericarpColour === selectedGrainColor
+      )
+    }
+
+    setFilteredVarieties(filtered)
+  }, [searchTerm, selectedType, selectedGrainShape, selectedGrainColor, varieties])
+
+  const handleClearFilters = () => {
+    setSearchTerm('')
+    setSelectedType('')
+    setSelectedGrainShape('')
+    setSelectedGrainColor('')
+  }
+
+  const hasActiveFilters =
+    searchTerm || selectedType || selectedGrainShape || selectedGrainColor
 
   if (error && !loading) {
     return (
@@ -116,6 +166,82 @@ export function PaddyVarietiesContent() {
           className="pl-10"
         />
       </div>
+
+      {/* Filters */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm">{t('common.filter')}</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {/* Duration/Type Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t('paddyVarieties.durationLabel')}</label>
+                <select
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
+                >
+                  <option value="">{t('common.all')}</option>
+                  {uniqueTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Grain Shape Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t('paddyVarieties.grainSizeLabel')}</label>
+                <select
+                  value={selectedGrainShape}
+                  onChange={(e) => setSelectedGrainShape(e.target.value)}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
+                >
+                  <option value="">{t('common.all')}</option>
+                  {uniqueGrainShapes.map((shape) => (
+                    <option key={shape} value={shape}>
+                      {shape}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Grain Color Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">{t('paddyVarieties.grainColorLabel')}</label>
+                <select
+                  value={selectedGrainColor}
+                  onChange={(e) => setSelectedGrainColor(e.target.value)}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
+                >
+                  <option value="">{t('common.all')}</option>
+                  {uniqueGrainColors.map((color) => (
+                    <option key={color} value={color}>
+                      {color}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Clear Filters Button */}
+              {hasActiveFilters && (
+                <div className="flex items-end">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearFilters}
+                    className="w-full"
+                  >
+                    {t('common.clear')}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Results Count */}
       {!loading && varieties.length > 0 && (

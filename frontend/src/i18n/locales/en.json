@@ -21,7 +21,10 @@
     "required": "Required",
     "optional": "Optional",
     "unit": "Unit",
-    "enterArea": "Enter area"
+    "enterArea": "Enter area",
+    "all": "All",
+    "filter": "Filter",
+    "clear": "Clear Filters"
   },
   "navigation": {
     "dashboard": "Dashboard",
