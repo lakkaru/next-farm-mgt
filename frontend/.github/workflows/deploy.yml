@@ -1,0 +1,188 @@
+# ============================================
+# Farm Management System - Next.js Frontend
+# GitHub Actions CI/CD Pipeline
+# ============================================
+# 
+# This workflow:
+# 1. Runs on push to main/develop branches
+# 2. Runs on pull requests
+# 3. Lints and type-checks the code
+# 4. Builds the application
+# 5. (Optional) Deploys to VPS on main branch
+# ============================================
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ----------------------
+  # Lint and Type Check
+  # ----------------------
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript type check
+        run: npm run type-check
+
+  # ----------------------
+  # Build Application
+  # ----------------------
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api' }}
+          NEXT_PUBLIC_APP_NAME: "Farm Management System"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nextjs-build
+          path: .next/
+          retention-days: 7
+
+  # ----------------------
+  # Run Tests (optional)
+  # ----------------------
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: lint
+    if: false  # Enable when tests are added
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        if: always()
+        with:
+          files: ./coverage/lcov.info
+
+  # ----------------------
+  # Deploy to Production
+  # ----------------------
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [lint, build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    
+    steps:
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            cd /var/www/farm-mgt-frontend
+            git fetch origin main
+            git reset --hard origin/main
+            npm ci --production=false
+            npm run build
+            pm2 reload ecosystem.config.js --env production
+            pm2 save
+            echo "Deployment completed at $(date)"
+
+      - name: Health check
+        run: |
+          sleep 10
+          curl -f ${{ secrets.PRODUCTION_URL }}/api/health || exit 1
+
+      - name: Notify on success
+        if: success()
+        run: echo "✅ Deployment to production successful!"
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "❌ Deployment to production failed!"
+
+  # ----------------------
+  # Deploy to Staging
+  # ----------------------
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [lint, build]
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    environment: staging
+    
+    steps:
+      - name: Deploy to Staging VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            cd /var/www/farm-mgt-staging
+            git fetch origin develop
+            git reset --hard origin/develop
+            npm ci --production=false
+            npm run build
+            pm2 reload ecosystem.config.js --env staging
+            pm2 save
+            echo "Staging deployment completed at $(date)"
+
+      - name: Notify on success
+        if: success()
+        run: echo "✅ Deployment to staging successful!"
