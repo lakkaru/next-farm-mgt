@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/hooks/use-auth'
+import { useI18n } from '@/contexts/i18n-context'
 import { authAPI } from '@/lib/api'
 import { getInitials } from '@/lib/utils'
 import { LanguageSwitcher } from '@/components/language-switcher'
@@ -37,7 +38,7 @@ import {
 } from 'lucide-react'
 
 interface NavItem {
-  title: string
+  title: string // translation key
   href: string
   icon: React.ElementType
   roles?: string[]
@@ -46,43 +47,43 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    title: 'Dashboard',
+    title: 'navigation.dashboard',
     href: '/dashboard',
     icon: LayoutDashboard,
   },
   {
-    title: 'Farms',
+    title: 'navigation.farms',
     href: '/farms',
     icon: Building2,
   },
   {
-    title: 'Paddy',
+    title: 'navigation.paddy',
     href: '/paddy',
     icon: Leaf,
     children: [
-      { title: 'Season Plans', href: '/paddy/season-plans', icon: Calendar },
-      { title: 'Varieties', href: '/paddy/varieties', icon: Leaf },
-      { title: 'Disease Detection', href: '/paddy/disease-detection', icon: Bug },
+      { title: 'navigation.seasonPlans', href: '/paddy/season-plans', icon: Calendar },
+      { title: 'navigation.paddyVarieties', href: '/paddy/varieties', icon: Leaf },
+      { title: 'navigation.diseaseDetection', href: '/paddy/disease-detection', icon: Bug },
     ],
   },
   {
-    title: 'Machinery',
+    title: 'navigation.machinery',
     href: '/machinery',
     icon: Wrench,
     children: [
-      { title: 'Search', href: '/machinery/search', icon: Wrench },
-      { title: 'My Machinery', href: '/machinery/my-machinery', icon: Wrench },
-      { title: 'My Requests', href: '/machinery/my-requests', icon: Wrench },
+      { title: 'navigation.searchMachinery', href: '/machinery/search', icon: Wrench },
+      { title: 'navigation.myMachinery', href: '/machinery/my-machinery', icon: Wrench },
+      { title: 'navigation.myRequests', href: '/machinery/my-requests', icon: Wrench },
     ],
   },
   {
-    title: 'Admin',
+    title: 'navigation.admin',
     href: '/admin',
     icon: Users,
     roles: ['admin'],
     children: [
-      { title: 'Users', href: '/admin/users', icon: Users },
-      { title: 'Disease References', href: '/admin/disease-references', icon: FileImage },
+      { title: 'navigation.userManagement', href: '/admin/users', icon: Users },
+      { title: 'navigation.diseaseReferences', href: '/admin/disease-references', icon: FileImage },
     ],
   },
 ]
@@ -92,6 +93,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const pathname = usePathname()
   const { user, logout, isAuthenticated, isLoading } = useAuth()
+  const { t } = useI18n()
 
   const hasRole = (roles?: string[]) => {
     if (!roles || roles.length === 0) return true
@@ -182,7 +184,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       )}
                     >
                       <item.icon className="h-5 w-5 shrink-0" />
-                      {sidebarOpen && <span>{item.title}</span>}
+                      {sidebarOpen && <span>{t(item.title)}</span>}
                     </div>
                     {sidebarOpen && (
                       <ul className="ml-6 mt-1 space-y-1">
@@ -198,7 +200,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                               )}
                             >
                               <child.icon className="h-4 w-4 shrink-0" />
-                              <span>{child.title}</span>
+                              <span>{t(child.title)}</span>
                             </Link>
                           </li>
                         ))}
@@ -221,7 +223,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     )}
                   >
                     <item.icon className="h-5 w-5 shrink-0" />
-                    {sidebarOpen && <span>{item.title}</span>}
+                    {sidebarOpen && <span>{t(item.title)}</span>}
                   </Link>
                 </li>
               )
@@ -270,13 +272,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <DropdownMenuItem asChild>
                   <Link href="/profile">
                     <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
+                    <span>{t('navigation.profile')}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  <span>{t('navigation.logout')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
