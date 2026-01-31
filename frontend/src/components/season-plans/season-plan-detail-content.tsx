@@ -88,10 +88,10 @@ interface SeasonPlan {
 }
 
 interface SeasonPlanDetailContentProps {
-  planId: string
+  seasonPlanId: string
 }
 
-export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps) {
+export function SeasonPlanDetailContent({ seasonPlanId }: SeasonPlanDetailContentProps) {
   const { t } = useTranslation()
   const router = useRouter()
   const [plan, setPlan] = useState<SeasonPlan | null>(null)
@@ -104,7 +104,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
     try {
       setLoading(true)
       setError(null)
-      const response = await seasonPlanAPI.getSeasonPlan(planId)
+      const response = await seasonPlanAPI.getSeasonPlan(seasonPlanId)
       console.log('Season plan response:', response.data)
       const planData = response.data.data || response.data
       console.log('Plan data:', planData)
@@ -116,20 +116,20 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
     } finally {
       setLoading(false)
     }
-  }, [planId, t])
+  }, [seasonPlanId, t])
 
   useEffect(() => {
-    if (planId) {
+    if (seasonPlanId) {
       loadSeasonPlan()
     }
-  }, [planId, loadSeasonPlan])
+  }, [seasonPlanId, loadSeasonPlan])
 
   const handleDelete = async () => {
     try {
       setDeleting(true)
-      await seasonPlanAPI.deleteSeasonPlan(planId)
+      await seasonPlanAPI.deleteSeasonPlan(seasonPlanId)
       toast.success(t('seasonPlans.success.deleted'))
-      router.push('/paddy/season-plans')
+      router.push('/season-plans')
     } catch (err) {
       console.error('Error deleting season plan:', err)
       toast.error(t('seasonPlans.errors.deleteFailed'))
@@ -181,7 +181,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       <div className="space-y-6">
         <div className="flex items-center gap-4">
           <Button
-            onClick={() => router.push('/paddy/season-plans')}
+            onClick={() => router.push('/season-plans')}
             variant="outline"
             size="icon"
           >
@@ -193,7 +193,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error || t('seasonPlans.errors.notFound')}</AlertDescription>
         </Alert>
-        <Button onClick={() => router.push('/paddy/season-plans')} variant="outline">
+        <Button onClick={() => router.push('/season-plans')} variant="outline">
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t('seasonPlans.backToList')}
         </Button>
@@ -207,7 +207,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Button
-            onClick={() => router.push('/paddy/season-plans')}
+            onClick={() => router.push('/season-plans')}
             variant="outline"
             size="icon"
           >
@@ -222,7 +222,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
         </div>
         <div className="flex gap-2">
           <Button
-            onClick={() => router.push(`/paddy/season-plans/${planId}/edit`)}
+            onClick={() => router.push(`/season-plans/${seasonPlanId}/edit`)}
             variant="outline"
           >
             <Edit className="mr-2 h-4 w-4" />
@@ -233,13 +233,6 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
             {t('seasonPlans.deletePlan')}
           </Button>
         </div>
-      </div>
-
-      {/* Status Badge */}
-      <div>
-        <Badge variant={getStatusColor(plan.status)}>
-          {t(`seasonPlans.statuses.${plan.status}`)}
-        </Badge>
       </div>
 
       {/* Basic Information & Timeline */}
@@ -292,12 +285,12 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
               <Leaf className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-muted-foreground">{t('seasonPlans.paddyVariety')}</p>
-                <p className="font-medium">{plan.paddyVariety?.name}</p>
+                <p className="font-medium">{plan.paddyVariety?.name || t('common.notSpecified')}</p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
+              <Mountain className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-muted-foreground">{t('seasonPlans.cultivatingArea')}</p>
                 <p className="font-medium">
@@ -308,46 +301,66 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
           </CardContent>
         </Card>
 
+        {/* Timeline */}
         <Card>
           <CardHeader>
             <CardTitle>{t('seasonPlans.timeline')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <p className="text-sm text-muted-foreground">{t('seasonPlans.cultivationDate')}</p>
-              <p className="font-medium">{formatDate(plan.cultivationDate)}</p>
+            <div className="flex items-start gap-3">
+              <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm text-muted-foreground">{t('seasonPlans.cultivationDate')}</p>
+                <p className="font-medium">{formatDate(plan.cultivationDate)}</p>
+              </div>
             </div>
 
-            {plan.transplantingDate && (
-              <div>
-                <p className="text-sm text-muted-foreground">{t('seasonPlans.transplantingDate')}</p>
-                <p className="font-medium">{formatDate(plan.transplantingDate)}</p>
+            {plan.plantingMethod === 'transplanting' && plan.transplantingDate && (
+              <div className="flex items-start gap-3">
+                <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground">{t('seasonPlans.transplantingDate')}</p>
+                  <p className="font-medium">{formatDate(plan.transplantingDate)}</p>
+                </div>
               </div>
             )}
 
-            {plan.expectedHarvest && (
-              <div>
-                <p className="text-sm text-muted-foreground">{t('seasonPlans.expectedHarvest')}</p>
-                <p className="font-medium">{formatDate(plan.expectedHarvest.date)}</p>
-                {plan.expectedHarvest.estimatedYield && (
-                  <p className="text-sm text-muted-foreground">
-                    {t('seasonPlans.estimatedYield')}: {plan.expectedHarvest.estimatedYield} kg
-                  </p>
-                )}
+            {plan.expectedHarvest?.date && (
+              <div className="flex items-start gap-3">
+                <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground">{t('seasonPlans.expectedHarvest')}</p>
+                  <p className="font-medium">{formatDate(plan.expectedHarvest.date)}</p>
+                  {plan.expectedHarvest.estimatedYield && (
+                    <p className="text-sm text-muted-foreground">
+                      {t('seasonPlans.estimatedYield')}: {plan.expectedHarvest.estimatedYield} {t('seasonPlans.units.kg')}
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
-            {plan.actualHarvest && (
-              <div>
-                <p className="text-sm text-muted-foreground">{t('seasonPlans.actualHarvest')}</p>
-                <p className="font-medium">{formatDate(plan.actualHarvest.date)}</p>
-                {plan.actualHarvest.actualYield && (
-                  <p className="text-sm text-muted-foreground">
-                    {t('seasonPlans.actualYield')}: {plan.actualHarvest.actualYield} kg
-                  </p>
-                )}
+            {plan.actualHarvest?.date && (
+              <div className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground">{t('seasonPlans.actualHarvest')}</p>
+                  <p className="font-medium">{formatDate(plan.actualHarvest.date)}</p>
+                  {plan.actualHarvest.actualYield && (
+                    <p className="text-sm text-muted-foreground">
+                      {t('seasonPlans.actualYield')}: {plan.actualHarvest.actualYield} {t('seasonPlans.units.kg')}
+                    </p>
+                  )}
+                </div>
               </div>
             )}
+
+            <div className="flex items-center justify-between pt-4 border-t">
+              <span className="text-sm font-medium">{t('seasonPlans.status')}</span>
+              <Badge variant={getStatusColor(plan.status)}>
+                {t(`seasonPlans.statuses.${plan.status}`)}
+              </Badge>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -365,13 +378,13 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                   key={index}
                   className="flex items-center justify-between p-3 border rounded-lg"
                 >
-                  <div className="flex items-center gap-3 flex-1">
+                  <div className="flex items-center gap-3">
                     {stage.completed ? (
                       <CheckCircle className="h-5 w-5 text-green-600" />
                     ) : (
                       <Clock className="h-5 w-5 text-muted-foreground" />
                     )}
-                    <div className="flex-1">
+                    <div>
                       <p className="font-medium">{t(`seasonPlans.stages.${stage.stage}`)}</p>
                       <p className="text-sm text-muted-foreground">
                         {formatDate(stage.startDate)}
@@ -379,9 +392,6 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                       </p>
                     </div>
                   </div>
-                  <Badge variant={stage.completed ? 'default' : 'secondary'}>
-                    {stage.completed ? t('seasonPlans.applied') : t('seasonPlans.pending')}
-                  </Badge>
                 </div>
               ))}
             </div>
@@ -397,19 +407,19 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {plan.fertilizerSchedule.map((app, index) => (
+              {plan.fertilizerSchedule.map((fertilizer, index) => (
                 <div
                   key={index}
                   className="flex items-center justify-between p-3 border rounded-lg"
                 >
-                  <div className="flex-1">
-                    <p className="font-medium">{app.fertilizerType}</p>
+                  <div>
+                    <p className="font-medium">{fertilizer.fertilizerType}</p>
                     <p className="text-sm text-muted-foreground">
-                      {formatDate(app.applicationDate)} • {app.quantity} {app.unit}
+                      {formatDate(fertilizer.applicationDate)} • {fertilizer.quantity} {fertilizer.unit}
                     </p>
                   </div>
-                  <Badge variant={app.applied ? 'default' : 'secondary'}>
-                    {app.applied ? t('seasonPlans.applied') : t('seasonPlans.pending')}
+                  <Badge variant={fertilizer.applied ? 'default' : 'secondary'}>
+                    {fertilizer.applied ? t('seasonPlans.applied') : t('seasonPlans.pending')}
                   </Badge>
                 </div>
               ))}
@@ -421,31 +431,31 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       {/* Expenses */}
       {plan.expenses && plan.expenses.length > 0 && (
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>{t('seasonPlans.expenses')}</CardTitle>
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>{t('seasonPlans.expenses')}</span>
               <span className="text-lg font-bold">
-                LKR {calculateTotalExpenses().toLocaleString()}
+                {t('seasonPlans.total')}: Rs. {calculateTotalExpenses().toLocaleString()}
               </span>
-            </div>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {plan.expenses.map((expense, index) => (
                 <div
                   key={index}
                   className="flex items-center justify-between p-3 border rounded-lg"
                 >
-                  <div className="flex-1">
-                    <p className="font-medium">
-                      {t(`seasonPlans.expenseCategories.${expense.category}`)}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {formatDate(expense.date)} • {expense.description}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <DollarSign className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="font-medium">{expense.description}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {t(`seasonPlans.expenseCategories.${expense.category}`)} • {formatDate(expense.date)}
+                      </p>
+                    </div>
                   </div>
-                  <p className="font-medium">LKR {expense.amount.toLocaleString()}</p>
+                  <p className="font-semibold">Rs. {expense.amount.toLocaleString()}</p>
                 </div>
               ))}
             </div>
@@ -461,16 +471,12 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {plan.dailyRemarks
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .map((remark, index) => (
-                  <div key={index} className="border-l-2 border-primary pl-4 py-2">
-                    <p className="text-sm font-medium text-muted-foreground">
-                      {formatDate(remark.date)}
-                    </p>
-                    <p className="mt-1">{remark.remark}</p>
-                  </div>
-                ))}
+              {plan.dailyRemarks.map((remark, index) => (
+                <div key={index} className="p-3 border rounded-lg">
+                  <p className="text-sm text-muted-foreground mb-1">{formatDate(remark.date)}</p>
+                  <p>{remark.remark}</p>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -481,7 +487,9 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('seasonPlans.confirmDelete')}</DialogTitle>
-            <DialogDescription>{t('seasonPlans.deleteWarning')}</DialogDescription>
+            <DialogDescription>
+              {t('seasonPlans.deleteWarning')}
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
@@ -489,10 +497,14 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
               onClick={() => setDeleteDialogOpen(false)}
               disabled={deleting}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
-              {deleting ? 'Deleting...' : t('seasonPlans.deletePlan')}
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={deleting}
+            >
+              {deleting ? t('common.deleting') : t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

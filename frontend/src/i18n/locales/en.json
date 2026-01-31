@@ -1406,6 +1406,98 @@
       "requestFailed": "Failed to send request"
     }
   },
+  "seasonPlans": {
+    "title": "Season Plans",
+    "seasonPlanDetails": "Season Plan Details",
+    "season": "Season",
+    "farm": "Farm",
+    "backToList": "Back to List",
+    "editPlan": "Edit Plan",
+    "deletePlan": "Delete Plan",
+    "confirmDelete": "Delete Season Plan?",
+    "deleteWarning": "Are you sure you want to delete this season plan? This action cannot be undone.",
+    "basicInfo": "Basic Information",
+    "timeline": "Timeline",
+    "district": "District",
+    "climateZone": "Climate Zone",
+    "irrigationMethod": "Irrigation Method",
+    "plantingMethod": "Planting Method",
+    "paddyVariety": "Paddy Variety",
+    "cultivatingArea": "Cultivating Area",
+    "cultivationDate": "Cultivation Date",
+    "seedingDate": "Seeding Date",
+    "transplantingDate": "Transplanting Date",
+    "expectedHarvest": "Expected Harvest",
+    "estimatedYield": "Estimated Yield",
+    "actualHarvest": "Actual Harvest",
+    "actualYield": "Actual Yield",
+    "status": "Status",
+    "growingStages": "Growing Stages",
+    "fertilizerSchedule": "Fertilizer Schedule",
+    "expenses": "Expenses",
+    "total": "Total",
+    "dailyRemarks": "Daily Remarks",
+    "applied": "Applied",
+    "pending": "Pending",
+    "seasons": {
+      "maha": "Maha",
+      "yala": "Yala"
+    },
+    "units": {
+      "hectares": "Hectares",
+      "acres": "Acres",
+      "perches": "Perches",
+      "kg": "kg",
+      "tons": "tons",
+      "bags": "bags"
+    },
+    "irrigationMethods": {
+      "Rain fed": "Rainfed",
+      "Under irrigation": "Irrigated"
+    },
+    "plantingMethods": {
+      "direct_seeding": "Direct Seeding",
+      "transplanting": "Transplanting",
+      "parachute_seeding": "Parachute Seeding"
+    },
+    "statuses": {
+      "planned": "Planned",
+      "active": "Active",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "stages": {
+      "land_preparation": "Land Preparation",
+      "nursery": "Nursery",
+      "transplanting": "Transplanting",
+      "tillering": "Tillering",
+      "flowering": "Flowering",
+      "grain_filling": "Grain Filling",
+      "maturity": "Maturity",
+      "harvest": "Harvest"
+    },
+    "expenseCategories": {
+      "seeds": "Seeds",
+      "fertilizer": "Fertilizer",
+      "pesticides": "Pesticides",
+      "labor": "Labor",
+      "machinery": "Machinery",
+      "irrigation": "Irrigation",
+      "other": "Other"
+    },
+    "errors": {
+      "loadFailed": "Failed to load season plan",
+      "deleteFailed": "Failed to delete season plan",
+      "notFound": "Season plan not found",
+      "saveFailed": "Failed to save season plan",
+      "updateFailed": "Failed to update season plan"
+    },
+    "success": {
+      "deleted": "Season plan deleted successfully",
+      "created": "Season plan created successfully",
+      "updated": "Season plan updated successfully"
+    }
+  },
   "divisionalSecretariats": {
     "killinochchi": {
       "pachchilaipalli": "Pachchilaipalli",
