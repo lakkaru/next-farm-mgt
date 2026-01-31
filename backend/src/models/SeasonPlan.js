@@ -79,10 +79,10 @@ const seasonPlanSchema = new mongoose.Schema({
     date: Date,
     fertilizers: {
       // Legacy simple structure (still supported for backward compatibility)
-      urea: Number,
-      tsp: Number,
-      mop: Number,
-      zincSulphate: Number,
+      // urea: Number,
+      // tsp: Number,
+      // mop: Number,
+      // zincSulphate: Number,
       // New detailed structure with per-ha and per-field amounts
       recommendedPerHa: {
         urea: { type: Number, default: 0 },

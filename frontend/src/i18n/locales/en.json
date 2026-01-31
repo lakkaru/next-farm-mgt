@@ -21,6 +21,8 @@
     "required": "Required",
     "optional": "Optional",
     "unit": "Unit",
+    "recommendedPerHa": "Recommended per hectare",
+    "perFieldKg": "For field (kg)",
     "enterArea": "Enter area",
     "all": "All",
     "filter": "Filter",
@@ -398,6 +400,10 @@
     "appliedDate": "Applied Date",
     "stageMarkedComplete": "Stage marked as complete",
     "stageUpdated": "Stage implementation updated",
+     "urea": "Urea",
+    "tsp": "Triple Super Phosphate (TSP)",
+    "mop": "Muriate of Potash (MOP)",
+    "zincSulphate": "Zinc Sulphate",
     "fertilizerMarkedApplied": "Fertilizer marked as applied",
     "fertilizerUpdated": "Fertilizer application updated",
     "confirmDeleteFertilizer": "Delete Fertilizer?",
@@ -918,9 +924,9 @@
       },
       "fertilizerTypes": {
         "urea": "Urea",
-        "tsp": "TSP",
-        "mop": "MOP",
-        "zinc_sulphate": "Zinc Sulphate"
+        "tsp": "Triple Super Phosphate (TSP)",
+        "mop": "Muriate of Potash (MOP)",
+        "zincSulphate": "Zinc Sulphate"
       },
       "harvestTracking": "Harvest Tracking",
       "recordHarvest": "Record Harvest",

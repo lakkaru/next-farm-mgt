@@ -101,7 +101,7 @@ interface SeasonPlan {
   fertilizerSchedule?: Array<{
     stage?: string
     type?: string
-    applicationDate: string
+    date: string
     fertilizerType: string
     quantity: number
     amount?: number
@@ -109,8 +109,11 @@ interface SeasonPlan {
     applied: boolean
     status?: string
     appliedDate?: string
+    implementedDate?: string
+    description?: string
     applicationNotes?: string
     notes?: string
+    fertilizers?: Record<string, number>
   }>
   expenses?: Array<{
     category: string
@@ -326,6 +329,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
         applied: true,
         appliedDate: fertilizerImplementationData.appliedDate,
         notes: fertilizerImplementationData.notes,
+        date: fertilizerImplementationData.appliedDate // Ensure 'date' is included
       }
 
       await seasonPlanAPI.updateSeasonPlan(planId, {
@@ -413,9 +417,17 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
         applied: false,
         status: 'pending' as const,
         notes: `LCC Index: ${lccData.leafColorIndex}, Plant Age: ${calculatePlantAge()} days`,
+        date: lccData.currentDate, // Add 'date' explicitly
+        implementedDate: lccData.currentDate, // Add 'implementedDate' explicitly
+        description: 'Default description' // Add 'description' explicitly
       }
 
-      const updatedFertilizers = [...(plan.fertilizerSchedule || []), newFertilizer]
+      const updatedFertilizers = [...(plan.fertilizerSchedule || []), {
+        ...newFertilizer,
+        date: newFertilizer.date || newFertilizer.applicationDate || new Date().toISOString().split('T')[0],
+        implementedDate: newFertilizer.implementedDate || newFertilizer.applicationDate || new Date().toISOString().split('T')[0], // Add implementedDate
+        description: newFertilizer.description || '', // Ensure description is included
+      }]
 
       await seasonPlanAPI.updateSeasonPlan(planId, {
         ...plan,
@@ -1125,36 +1137,53 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                           <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                             <Calendar className="h-3.5 w-3.5" />
                             <span className="font-medium">{t('seasonPlans.scheduled')}:</span>
-                            <span>{formatDate(app.applicationDate)}</span>
+                            <span>{formatDate(app.date)}</span>
                           </div>
                           
                           {/* Implemented Date (if applied) */}
-                          {app.applied && app.appliedDate && (
+                          {app.applied && app.implementedDate && (
                             <div className="flex items-center gap-2 mt-1 text-sm text-green-600">
                               <CheckCircle className="h-3.5 w-3.5" />
                               <span className="font-medium">{t('seasonPlans.implemented')}:</span>
-                              <span>{formatDate(app.appliedDate)}</span>
+                              <span>{formatDate(app.implementedDate)}</span>
                             </div>
                           )}
                           
                           {/* Description */}
-                          {app.applicationNotes && (
+                          {app.description && (
                             <p className="mt-2 text-sm text-foreground/80 leading-relaxed">
-                              {app.applicationNotes}
+                              {app.description}
                             </p>
                           )}
                           
                           {/* Fertilizer Details */}
                           <div className="mt-3 space-y-1">
-                            <div className="text-sm">
-                              <span className="font-medium">{t('seasonPlans.fertilizerType')}:</span> {app.fertilizerType}
-                            </div>
-                            <div className="text-sm">
-                              <span className="font-medium">{t('seasonPlans.quantity')}:</span> {app.quantity} {app.unit}
-                            </div>
-                            {app.amount && (
-                              <div className="text-sm">
-                                <span className="font-medium">LKR:</span> {app.amount.toLocaleString()}
+                            {app.fertilizers && (
+                              <div className='flex justify-between items-center'>
+                                <div>
+                                  <div className="text-sm font-medium">
+                                    {t('common.perFieldKg')}:
+                                  </div>
+                                  {Object.entries(app.fertilizers.perFieldKg || {}).map(
+                                    ([fertilizer, quantity]) => (
+                                      <div className="text-sm" key={fertilizer}>
+                                        <span className="font-medium">{t(`seasonPlans.${fertilizer}`)}:</span> {quantity}
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                                <div>
+                                  <div className="text-sm font-medium">
+                                    {t('common.recommendedPerHa')}:
+                                  </div>
+                                  {Object.entries(app.fertilizers.recommendedPerHa || {}).map(
+                                    ([fertilizer, quantity]) => (
+                                      <div className="text-sm" key={fertilizer}>
+                                        <span className="font-medium">{t(`seasonPlans.${fertilizer}`)}:</span> {quantity}
+                                      </div>
+                                    )
+                                  )}
+                                </div>
                               </div>
                             )}
                           </div>
@@ -1169,7 +1198,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                                     {t('seasonPlans.notes')}:
                                   </span>
                                   <p className="text-sm text-pink-600 dark:text-pink-400 mt-1">
-                                    {app.notes}
+                                    {t(app.notes)}
                                   </p>
                                 </div>
                               </div>
