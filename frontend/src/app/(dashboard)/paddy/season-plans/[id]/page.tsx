@@ -1,6 +1,6 @@
 'use client'
 
-import { SeasonPlanDetailContent } from '@/components/paddy/season-plan-detail-content'
+import { SeasonPlanDetailContent } from '@/components/season-plans/season-plan-detail-content'
 
 interface SeasonPlanDetailPageProps {
   params: { id: string }
