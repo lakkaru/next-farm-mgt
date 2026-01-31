@@ -888,13 +888,292 @@
     }
   },
   "diseaseDetection": {
+    "title": "Rice Plant Nutritional Deficiencies",
+    "subtitle": "Learn to identify and treat common nutritional deficiencies in rice plants",
     "uploadImage": "Upload Leaf Image",
     "detectDisease": "Detect Disease",
     "analyzing": "Analyzing image...",
     "results": "Detection Results",
     "confidence": "Confidence",
     "noImageSelected": "Please select an image first",
-    "analysisComplete": "Disease analysis complete!"
+    "analysisComplete": "Disease analysis complete!",
+    "aiNoteTitle": "Note:",
+    "aiNote": "Below you'll find comprehensive information about common nutritional deficiencies and their treatments. AI-powered disease detection coming soon.",
+    "viewCompleteGuide": "View Complete Guide",
+    "deficiencyGuide": "Complete Guide",
+    "deficiencyLabel": "Deficiency",
+    "keySymptomsLabel": "Key Symptoms:",
+    "severity": {
+      "highImpact": "High Impact",
+      "mediumImpact": "Medium Impact"
+    },
+    "criticalStageLabel": "Critical Stage:",
+    "visualSignsTitle": "Visual Signs",
+    "allSymptomsTitle": "All Symptoms",
+    "commonCausesTitle": "Common Causes",
+    "treatmentProtocolTitle": "Treatment Protocol",
+    "timingLabel": "Timing:",
+    "preventionMeasuresTitle": "Prevention Measures",
+    "criticalGrowthStagesLabel": "Critical Growth Stages:",
+    "deficiencies": {
+      "nitrogen": {
+        "name": "Nitrogen (N) Deficiency",
+        "severity": "High Impact"
+      },
+      "potassium": {
+        "name": "Potassium (K) Deficiency",
+        "severity": "High Impact"
+      },
+      "phosphorus": {
+        "name": "Phosphorus (P) Deficiency",
+        "severity": "Medium Impact"
+      },
+      "zinc": {
+        "name": "Zinc (Zn) Deficiency",
+        "severity": "High Impact"
+      },
+      "ironToxicity": {
+        "name": "Iron (Fe) - Toxicity",
+        "severity": "High Impact"
+      },
+      "sulfur": {
+        "name": "Sulfur (S) Deficiency",
+        "severity": "Medium Impact",
+        "symptoms": [
+          "Uniform light green to yellow color (whole plant)",
+          "Younger leaves more affected than old",
+          "Stunted growth",
+          "Thin stems",
+          "Delayed flowering and maturity"
+        ],
+        "visualSigns": [
+          "Overall pale appearance",
+          "Similar to nitrogen but affects young leaves",
+          "No distinct patterns or spots",
+          "Uniform chlorosis across plant"
+        ],
+        "causes": [
+          "Sandy soils with low sulfur",
+          "Low organic matter",
+          "High rainfall areas",
+          "Use of sulfur-free fertilizers",
+          "Reduced sulfur deposition from atmosphere"
+        ],
+        "treatment": [
+          "Apply ammonium sulfate (21-0-0-24S) at 25 kg/acre",
+          "Use gypsum (calcium sulfate) at 50 kg/acre",
+          "Apply elemental sulfur at 10 kg/acre",
+          "Use single superphosphate (contains 12% S)",
+          "Foliar spray of 2% ammonium sulfate"
+        ],
+        "prevention": [
+          "Use sulfur-containing fertilizers",
+          "Apply organic manure",
+          "Use ammonium sulfate instead of urea",
+          "Apply gypsum in sulfur-deficient areas",
+          "Regular soil testing for sulfur"
+        ],
+        "timing": "Apply at first symptoms or as preventive measure",
+        "criticalStages": "Early vegetative stage"
+      }
+    },
+    "nitrogen": {
+      "symptoms": [
+        "Uniform yellowing (chlorosis) starting from older leaf tips",
+        "Stunted growth and reduced tillering",
+        "Light green to yellow older leaves",
+        "Younger leaves relatively greener",
+        "Reduced plant vigor"
+      ],
+      "visualSigns": [
+        "Pale yellow-green coloration of entire plant",
+        "V-shaped yellowing pattern from leaf tips",
+        "Lower leaves affected first",
+        "Symptoms progress upward"
+      ],
+      "causes": [
+        "Low soil nitrogen content",
+        "Poor organic matter in soil",
+        "Heavy rains washing away nitrogen",
+        "Sandy soils with low retention",
+        "Late or insufficient fertilizer application"
+      ],
+      "treatment": [
+        "Apply urea (46-0-0) at 20-25 kg/acre",
+        "Split application: 50% basal, 25% tillering, 25% panicle initiation",
+        "Use ammonium sulfate (21-0-0) for quick results",
+        "Apply calcium ammonium nitrate (CAN) 15-20 kg/acre",
+        "Foliar spray of 2% urea solution for quick greening"
+      ],
+      "prevention": [
+        "Regular soil testing before planting",
+        "Incorporate green manure crops",
+        "Apply compost or FYM at 5-10 tons/acre",
+        "Use slow-release nitrogen fertilizers",
+        "Practice balanced fertilization",
+        "Avoid over-irrigation that causes nitrogen leaching"
+      ],
+      "timing": "Apply immediately at first signs. Response visible in 7-10 days",
+      "criticalStages": "Tillering and panicle initiation stages"
+    },
+    "potassium": {
+      "symptoms": [
+        "Yellow-orange discoloration starting from older leaf tips",
+        "Leaf margins turn yellowish-brown and dry up (firing)",
+        "Poor grain filling and small grains",
+        "Weak stems prone to lodging",
+        "Dark brown necrotic spots on leaves"
+      ],
+      "visualSigns": [
+        "Brown scorched appearance on leaf margins",
+        "Symptoms start from tips and edges",
+        "Older leaves die prematurely",
+        "Stems become weak and break easily"
+      ],
+      "causes": [
+        "Low potassium in soil",
+        "High nitrogen application without potassium",
+        "Sandy or acidic soils",
+        "Continuous rice cultivation",
+        "Straw removal from fields"
+      ],
+      "treatment": [
+        "Apply muriate of potash (KCl) at 15-20 kg/acre",
+        "Use potassium sulfate for saline soils",
+        "Apply 2% KCl foliar spray",
+        "Split application: 50% basal, 50% at panicle initiation",
+        "Emergency: Potassium nitrate foliar spray"
+      ],
+      "prevention": [
+        "Maintain K:N ratio of 1:1 or higher",
+        "Return rice straw to fields",
+        "Apply farmyard manure",
+        "Use potassium-rich organic fertilizers",
+        "Soil testing every season",
+        "Avoid excessive nitrogen without potassium"
+      ],
+      "timing": "Critical at tillering and flowering stages",
+      "criticalStages": "Tillering, flowering, and grain filling"
+    },
+    "phosphorus": {
+      "symptoms": [
+        "Dark green, narrow, erect leaves",
+        "Severely stunted growth",
+        "Very few tillers",
+        "Purple coloration may appear on leaves",
+        "Delayed maturity",
+        "Poor root development"
+      ],
+      "visualSigns": [
+        "Plants remain small and compact",
+        "Dark bluish-green color",
+        "Purplish tint on leaves and stems",
+        "Reduced plant height throughout growth"
+      ],
+      "causes": [
+        "Acidic or alkaline soils fixing phosphorus",
+        "Low organic matter",
+        "Iron or aluminum toxicity",
+        "Cold soil temperatures",
+        "Waterlogged conditions"
+      ],
+      "treatment": [
+        "Apply single superphosphate (SSP) at 30-40 kg/acre",
+        "Use diammonium phosphate (DAP) 20-25 kg/acre",
+        "Apply rock phosphate in acidic soils",
+        "Broadcast and incorporate before planting",
+        "Use water-soluble phosphorus for quick action"
+      ],
+      "prevention": [
+        "Soil pH maintenance (6.0-7.0)",
+        "Apply phosphorus at planting time",
+        "Incorporate organic matter",
+        "Use phosphorus-solubilizing bacteria",
+        "Apply lime in acidic soils",
+        "Ensure good drainage"
+      ],
+      "timing": "Best as basal application before transplanting",
+      "criticalStages": "Early vegetative growth"
+    },
+    "zinc": {
+      "symptoms": [
+        "Dusty brown spots or blotches on older leaves",
+        "Chlorosis (whitening) of mid-veins in younger leaves",
+        "Reduced plant height",
+        "Bronzing of leaves",
+        "Stunted growth 2-4 weeks after transplanting"
+      ],
+      "visualSigns": [
+        "Brown rusty spots on lower leaves",
+        "White or light green mid-ribs",
+        "Uneven plant height in field",
+        "Plants fail to recover after transplanting shock"
+      ],
+      "causes": [
+        "High pH alkaline soils",
+        "High phosphorus application",
+        "Flooded conditions (anaerobic)",
+        "Sandy or calcareous soils",
+        "Low organic matter"
+      ],
+      "treatment": [
+        "Apply zinc sulfate (ZnSO4) at 10-12 kg/acre",
+        "Foliar spray of 0.5% zinc sulfate + 0.25% lime",
+        "Soil application before final puddling",
+        "Zinc oxide application at 5 kg/acre",
+        "Chelated zinc for quick results"
+      ],
+      "prevention": [
+        "Apply zinc as basal dose",
+        "Maintain optimal soil moisture",
+        "Avoid excessive phosphorus",
+        "Use zinc-coated urea",
+        "Incorporate organic matter",
+        "Apply zinc every 2-3 years in deficient areas"
+      ],
+      "timing": "Apply before transplanting or at first symptoms",
+      "criticalStages": "Transplanting to tillering stage"
+    },
+    "ironToxicity": {
+      "symptoms": [
+        "Small brown spots on leaves that coalesce",
+        "Bronzed or rusty appearance of foliage",
+        "Reddish-brown discoloration",
+        "Affects older leaves first",
+        "Leaf tips and margins turn brown"
+      ],
+      "visualSigns": [
+        "Orange to brown speckling",
+        "Leaves appear scorched or burnt",
+        "Purple or reddish tinge on leaves",
+        "Extensive leaf area covered with spots"
+      ],
+      "causes": [
+        "Poorly drained acidic soils (pH < 5.5)",
+        "Waterlogged anaerobic conditions",
+        "High organic matter in acidic soil",
+        "Continuous flooding",
+        "Reduction of ferric to ferrous iron"
+      ],
+      "treatment": [
+        "Improve drainage to oxidize soil",
+        "Intermittent irrigation instead of continuous flooding",
+        "Apply lime to raise pH to 6.0-6.5",
+        "Apply potassium to counteract toxicity",
+        "Use iron toxicity-tolerant varieties",
+        "Mid-season drainage for aeration"
+      ],
+      "prevention": [
+        "Land leveling for proper drainage",
+        "Avoid continuous deep flooding",
+        "Apply lime before planting in acidic soils",
+        "Use raised bed cultivation",
+        "Incorporate rice straw to increase pH",
+        "Plant tolerant varieties in problem areas"
+      ],
+      "timing": "Drainage and lime application before symptoms worsen",
+      "criticalStages": "Mid-tillering to flowering"
+    }
   },
   "offline": {
     "message": "Check your internet connection and try again. Some features may be limited while offline.",

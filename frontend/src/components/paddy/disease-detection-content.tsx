@@ -308,15 +308,54 @@ export function DiseaseDetectionContent() {
     return 'secondary'
   }
 
+  const getSeverityTranslation = (severity: string) => {
+    if (severity === 'High Impact') return t('diseaseDetection.severity.highImpact')
+    return t('diseaseDetection.severity.mediumImpact')
+  }
+
+  const getTranslatedDeficiency = (deficiency: Deficiency): Deficiency => {
+    const keyMap: { [key: number]: string } = {
+      1: 'nitrogen',
+      2: 'potassium',
+      3: 'phosphorus',
+      4: 'zinc',
+      5: 'ironToxicity',
+      6: 'sulfur',
+    }
+    const key = keyMap[deficiency.id]
+    if (!key) return deficiency
+
+    return {
+      ...deficiency,
+      symptoms: deficiency.symptoms.map((symptom, idx) =>
+        t(`diseaseDetection.${key}.symptoms.${idx}`, { defaultValue: symptom })
+      ),
+      visualSigns: deficiency.visualSigns.map((sign, idx) =>
+        t(`diseaseDetection.${key}.visualSigns.${idx}`, { defaultValue: sign })
+      ),
+      causes: deficiency.causes.map((cause, idx) =>
+        t(`diseaseDetection.${key}.causes.${idx}`, { defaultValue: cause })
+      ),
+      treatment: deficiency.treatment.map((treatment, idx) =>
+        t(`diseaseDetection.${key}.treatment.${idx}`, { defaultValue: treatment })
+      ),
+      prevention: deficiency.prevention.map((prevention, idx) =>
+        t(`diseaseDetection.${key}.prevention.${idx}`, { defaultValue: prevention })
+      ),
+      timing: t(`diseaseDetection.${key}.timing`, { defaultValue: deficiency.timing }),
+      criticalStages: t(`diseaseDetection.${key}.criticalStages`, { defaultValue: deficiency.criticalStages }),
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          Rice Plant Nutritional Deficiencies
+          {t('diseaseDetection.title')}
         </h1>
         <p className="text-muted-foreground mt-2">
-          Learn to identify and treat common nutritional deficiencies in rice plants
+          {t('diseaseDetection.subtitle')}
         </p>
       </div>
 
@@ -324,18 +363,19 @@ export function DiseaseDetectionContent() {
       <Alert>
         <Beaker className="h-4 w-4" />
         <AlertDescription>
-          <strong>Note:</strong> Below you'll find comprehensive information about common
-          nutritional deficiencies and their treatments. AI-powered disease detection coming soon.
+          <strong>{t('diseaseDetection.aiNoteTitle')}</strong> {t('diseaseDetection.aiNote')}
         </AlertDescription>
       </Alert>
 
       {/* Deficiencies Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {nutritionalDeficiencies.map((deficiency) => (
+        {nutritionalDeficiencies.map((deficiency) => {
+          const translatedDef = getTranslatedDeficiency(deficiency)
+          return (
           <Card
             key={deficiency.id}
             className="h-full hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer overflow-hidden"
-            onClick={() => setSelectedDeficiency(deficiency)}
+            onClick={() => setSelectedDeficiency(translatedDef)}
           >
             {/* Image */}
             <div className="relative w-full h-40 bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center overflow-hidden">
@@ -344,7 +384,6 @@ export function DiseaseDetectionContent() {
                 alt={deficiency.nutrient}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  // Fallback to placeholder if image fails to load
                   e.currentTarget.style.display = 'none'
                 }}
               />
@@ -353,21 +392,21 @@ export function DiseaseDetectionContent() {
                 variant={getSeverityColor(deficiency.severity) as any}
                 className="absolute top-2 right-2"
               >
-                {deficiency.severity}
+                {getSeverityTranslation(deficiency.severity)}
               </Badge>
             </div>
 
             <CardHeader>
-              <CardTitle className="text-lg">{deficiency.nutrient} Deficiency</CardTitle>
+              <CardTitle className="text-lg">{deficiency.nutrient} {t('diseaseDetection.deficiencyLabel')}</CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-3">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-2">
-                  <strong>Key Symptoms:</strong>
+                  <strong>{t('diseaseDetection.keySymptomsLabel')}</strong>
                 </p>
                 <ul className="space-y-1">
-                  {deficiency.symptoms.slice(0, 2).map((symptom, idx) => (
+                  {translatedDef.symptoms.slice(0, 2).map((symptom, idx) => (
                     <li key={idx} className="text-sm text-muted-foreground flex gap-2">
                       <span>•</span>
                       <span>{symptom}</span>
@@ -378,7 +417,7 @@ export function DiseaseDetectionContent() {
 
               <div className="pt-2">
                 <p className="text-xs text-primary font-semibold">
-                  Critical Stage: {deficiency.criticalStages}
+                  {t('diseaseDetection.criticalStageLabel')} {translatedDef.criticalStages}
                 </p>
               </div>
 
@@ -388,15 +427,16 @@ export function DiseaseDetectionContent() {
                 className="w-full"
                 onClick={(e) => {
                   e.stopPropagation()
-                  setSelectedDeficiency(deficiency)
+                  setSelectedDeficiency(translatedDef)
                 }}
               >
                 <Info className="h-4 w-4 mr-2" />
-                View Complete Guide
+                {t('diseaseDetection.viewCompleteGuide')}
               </Button>
             </CardContent>
           </Card>
-        ))}
+        )})
+        }
       </div>
 
       {/* Detail Dialog */}
@@ -407,10 +447,10 @@ export function DiseaseDetectionContent() {
               <DialogHeader>
                 <div className="space-y-2">
                   <DialogTitle className="text-xl">
-                    {selectedDeficiency.nutrient} Deficiency - Complete Guide
+                    {selectedDeficiency.nutrient} {t('diseaseDetection.deficiencyGuide')}
                   </DialogTitle>
                   <Badge variant={getSeverityColor(selectedDeficiency.severity) as any}>
-                    {selectedDeficiency.severity}
+                    {getSeverityTranslation(selectedDeficiency.severity)}
                   </Badge>
                 </div>
               </DialogHeader>
@@ -429,7 +469,7 @@ export function DiseaseDetectionContent() {
                 <div className="bg-slate-50 rounded-lg p-4 space-y-3">
                   <h3 className="font-semibold flex items-center gap-2 text-primary">
                     <Zap className="h-4 w-4" />
-                    Visual Signs
+                    {t('diseaseDetection.visualSignsTitle')}
                   </h3>
                   <ul className="space-y-2">
                     {selectedDeficiency.visualSigns.map((sign, idx) => (
@@ -445,7 +485,7 @@ export function DiseaseDetectionContent() {
                 <div className="space-y-3">
                   <h3 className="font-semibold flex items-center gap-2">
                     <AlertCircle className="h-4 w-4 text-yellow-600" />
-                    All Symptoms
+                    {t('diseaseDetection.allSymptomsTitle')}
                   </h3>
                   <ul className="space-y-2">
                     {selectedDeficiency.symptoms.map((symptom, idx) => (
@@ -461,7 +501,7 @@ export function DiseaseDetectionContent() {
                 <div className="space-y-3">
                   <h3 className="font-semibold flex items-center gap-2">
                     <Info className="h-4 w-4" />
-                    Common Causes
+                    {t('diseaseDetection.commonCausesTitle')}
                   </h3>
                   <ul className="space-y-2">
                     {selectedDeficiency.causes.map((cause, idx) => (
@@ -477,11 +517,11 @@ export function DiseaseDetectionContent() {
                 <div className="space-y-3 bg-green-50 rounded-lg p-4">
                   <h3 className="font-semibold flex items-center gap-2 text-green-700">
                     <Pill className="h-4 w-4" />
-                    Treatment Protocol
+                    {t('diseaseDetection.treatmentProtocolTitle')}
                   </h3>
                   <Alert variant="default" className="bg-green-100 border-green-300">
                     <AlertDescription className="text-sm">
-                      <strong>Timing:</strong> {selectedDeficiency.timing}
+                      <strong>{t('diseaseDetection.timingLabel')}</strong> {selectedDeficiency.timing}
                     </AlertDescription>
                   </Alert>
                   <ul className="space-y-2">
@@ -498,7 +538,7 @@ export function DiseaseDetectionContent() {
                 <div className="space-y-3">
                   <h3 className="font-semibold flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-blue-600" />
-                    Prevention Measures
+                    {t('diseaseDetection.preventionMeasuresTitle')}
                   </h3>
                   <ul className="space-y-2">
                     {selectedDeficiency.prevention.map((prevention, idx) => (
@@ -514,7 +554,7 @@ export function DiseaseDetectionContent() {
                 <Alert variant="default">
                   <Shield className="h-4 w-4" />
                   <AlertDescription>
-                    <strong>Critical Growth Stages:</strong> {selectedDeficiency.criticalStages}
+                    <strong>{t('diseaseDetection.criticalGrowthStagesLabel')}</strong> {selectedDeficiency.criticalStages}
                   </AlertDescription>
                 </Alert>
               </div>
