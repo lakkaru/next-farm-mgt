@@ -221,10 +221,10 @@ export function DashboardContent() {
         router.push('/farms')
         break
       case 'seasonPlans':
-        router.push('/paddy/season-plans')
+        router.push('/season-plans')
         break
       case 'activeSeasons':
-        router.push('/paddy/season-plans?status=active')
+        router.push('/season-plans?status=active')
         break
       case 'paddyVarieties':
         router.push('/paddy/varieties')
@@ -506,7 +506,7 @@ export function DashboardContent() {
                     {t('dashboard.createFarm')}
                   </Button>
                 </Link>
-                <Link href="/paddy/season-plans/create" className="block">
+                <Link href="/season-plans/create" className="block">
                   <Button variant="outline" className="w-full justify-start gap-2">
                     <TrendingUp className="h-4 w-4" />
                     {t('dashboard.planPaddySeason')}

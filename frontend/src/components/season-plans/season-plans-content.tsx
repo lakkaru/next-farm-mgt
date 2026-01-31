@@ -124,7 +124,7 @@ export function SeasonPlansContent() {
   }
 
   const clearFilter = () => {
-    router.push('/paddy/season-plans')
+    router.push('/season-plans')
   }
 
   if (loading) {
@@ -147,7 +147,7 @@ export function SeasonPlansContent() {
         <div>
           <h1 className="text-2xl font-bold">{t('seasonPlans.title')}</h1>
         </div>
-        <Link href="/paddy/season-plans/create">
+        <Link href="/season-plans/create">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
             {t('seasonPlans.createPlan')}
@@ -192,7 +192,7 @@ export function SeasonPlansContent() {
                 : 'Get started by creating your first season plan'}
             </p>
             {!statusFilter && (
-              <Link href="/paddy/season-plans/create">
+              <Link href="/season-plans/create">
                 <Button>
                   <Plus className="h-4 w-4 mr-2" />
                   {t('seasonPlans.createFirstSeasonPlan')}
@@ -212,7 +212,7 @@ export function SeasonPlansContent() {
                 : null
 
             return (
-              <Link key={plan._id} href={`/paddy/season-plans/${plan._id}`}>
+              <Link key={plan._id} href={`/season-plans/${plan._id}`}>
                 <Card className="h-full hover:shadow-lg transition-all cursor-pointer border-l-4" style={{
                   borderLeftColor:
                     plan.status === 'completed' ? '#22c55e' :

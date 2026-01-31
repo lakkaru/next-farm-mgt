@@ -262,7 +262,7 @@ export function CreateSeasonPlanForm() {
       
       // Redirect after 2 seconds
       setTimeout(() => {
-        router.push('/paddy/season-plans')
+        router.push('/season-plans')
       }, 2000)
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to create season plan'
@@ -295,7 +295,7 @@ export function CreateSeasonPlanForm() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href="/paddy/season-plans">
+        <Link href="/season-plans">
           <Button variant="ghost" size="icon">
             <ArrowLeft className="h-4 w-4" />
           </Button>
@@ -571,7 +571,7 @@ export function CreateSeasonPlanForm() {
               <Button type="submit" disabled={loading}>
                 {loading ? t('seasonPlans.creating') : t('seasonPlans.createSeasonPlan')}
               </Button>
-              <Link href="/paddy/season-plans">
+              <Link href="/season-plans">
                 <Button type="button" variant="outline">{t('common.cancel')}</Button>
               </Link>
             </div>

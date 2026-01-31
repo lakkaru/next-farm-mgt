@@ -61,7 +61,7 @@ const navItems: NavItem[] = [
     href: '/paddy',
     icon: Leaf,
     children: [
-      { title: 'navigation.seasonPlans', href: '/paddy/season-plans', icon: Calendar },
+      { title: 'navigation.seasonPlans', href: '/season-plans', icon: Calendar },
       { title: 'navigation.paddyVarieties', href: '/paddy/varieties', icon: Leaf },
       { title: 'navigation.diseaseDetection', href: '/paddy/disease-detection', icon: Bug },
     ],

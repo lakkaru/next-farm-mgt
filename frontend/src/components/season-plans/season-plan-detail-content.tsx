@@ -247,7 +247,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       setDeleting(true)
       await seasonPlanAPI.deleteSeasonPlan(planId)
       toast.success(t('seasonPlans.success.deleted'))
-      router.push('/paddy/season-plans')
+      router.push('/season-plans')
     } catch (err) {
       console.error('Error deleting season plan:', err)
       toast.error(t('seasonPlans.errors.deleteFailed'))
@@ -736,7 +736,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       <div className="space-y-6">
         <div className="flex items-center gap-4">
           <Button
-            onClick={() => router.push('/paddy/season-plans')}
+            onClick={() => router.push('/season-plans')}
             variant="outline"
             size="icon"
           >
@@ -748,7 +748,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error || t('seasonPlans.errors.notFound')}</AlertDescription>
         </Alert>
-        <Button onClick={() => router.push('/paddy/season-plans')} variant="outline">
+        <Button onClick={() => router.push('/season-plans')} variant="outline">
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t('seasonPlans.backToList')}
         </Button>
@@ -762,7 +762,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Button
-            onClick={() => router.push('/paddy/season-plans')}
+            onClick={() => router.push('/season-plans')}
             variant="outline"
             size="icon"
           >
@@ -777,7 +777,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
         </div>
         <div className="flex gap-2">
           <Button
-            onClick={() => router.push(`/paddy/season-plans/${planId}/edit`)}
+            onClick={() => router.push(`/season-plans/${planId}/edit`)}
             variant="outline"
           >
             <Edit className="mr-2 h-4 w-4" />

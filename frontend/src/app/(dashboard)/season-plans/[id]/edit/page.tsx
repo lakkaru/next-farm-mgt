@@ -1,11 +1,11 @@
-import { EditSeasonPlanContent } from '@/components/season-plans/edit-season-plan-content'
+'use client'
 
-interface PageProps {
-  params: {
-    id: string
-  }
+import { EditSeasonPlanForm } from '@/components/paddy/edit-season-plan-form'
+
+interface EditSeasonPlanPageProps {
+  params: { id: string }
 }
 
-export default function EditSeasonPlanPage({ params }: PageProps) {
-  return <EditSeasonPlanContent seasonPlanId={params.id} />
+export default function EditSeasonPlanPage({ params }: EditSeasonPlanPageProps) {
+  return <EditSeasonPlanForm planId={params.id} />
 }

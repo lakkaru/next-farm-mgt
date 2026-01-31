@@ -1,12 +1,11 @@
-// import { SeasonPlanDetailContent } from '@/components/season-plans/season-plan-detail-content'
+'use client'
+
 import { SeasonPlanDetailContent } from '@/components/season-plans/season-plan-detail-content'
 
-interface PageProps {
-  params: {
-    id: string
-  }
+interface SeasonPlanDetailPageProps {
+  params: { id: string }
 }
 
-export default function SeasonPlanDetailPage({ params }: PageProps) {
+export default function SeasonPlanDetailPage({ params }: SeasonPlanDetailPageProps) {
   return <SeasonPlanDetailContent planId={params.id} />
 }
