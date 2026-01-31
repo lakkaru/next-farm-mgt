@@ -174,6 +174,8 @@
     "viewFarm": "ගොවිපල බලන්න",
     "deleteFarm": "ගොවිපල ඉවත් කරන්න",
     "farmName": "ගොවිපලේ නම",
+    "name": "ගොවිපලේ නම",
+    "namePlaceholder": "උදා: හරිත නිම්න ගොවිපල",
     "location": "ස්ථානය",
     "area": "ප්‍රමාණය",
     "soilType": "පස් වර්ගය",
@@ -198,9 +200,10 @@
     "basicInformation": "මූලික තොරතුරු",
     "farmType": "ගොවිපල වර්ගය",
     "description": "විස්තරය",
-    "descriptionHelper": "අත්‍යවශ්‍ය නොවේ: ඔබේ ගොවිපල, බෝග, හෝ විශේෂ ලක්ෂණ පිළිබඳ සටහන් එක් කරන්න",
+    "descriptionPlaceholder": "අත්‍යවශ්‍ය නොවේ: ඔබේ ගොවිපල, බෝග, හෝ විශේෂ ලක්ෂණ පිළිබඳ සටහන් එක් කරන්න",
     "locationInformation": "ස්ථාන තොරතුරු",
     "district": "දිස්ත්‍රික්කය",
+    "selectDistrict": "දිස්ත්‍රික්කය තෝරන්න",
     "cultivationZone": "වගා කලාපය",
     "selectDistrictFirst": "මුලින් දිස්ත්‍රික්කය තෝරන්න",
     "selectDivisionalSecretariatFirst": "මුලින් ප්‍රාදේශීය ලේකම් කාර්යාලය තෝරන්න",
@@ -211,7 +214,9 @@
     "areaInformation": "ප්‍රමාණ තොරතුරු",
     "totalAreaValue": "සම්පූර්ණ ප්‍රමාණය",
     "cultivatedAreaValue": "වගා කරන ප්‍රමාණය",
-    "coordinatesOptional": "ඛණ්ඩාංක (අත්‍යවශ්‍ය නැත)",
+    "cultivatedAreaHelper": "අත්‍යවශ්‍ය නොවේ",
+    "unit": "ඒකකය",
+    "coordinatesOptional": "ඛණ්ඩාංක (අත්‍යවශ්‍ය නොවේ)",
     "latitude": "අක්‍ෂාංශය",
     "longitude": "දේශාංශය",
     "cancel": "අවලංගු කරන්න",
@@ -221,27 +226,37 @@
     "creating": "නිර්මාණය කරමින්...",
     "createFarmButton": "ගොවිපල නිර්මාණය කරන්න",
     "farmTypes": {
-      "crop": "බෝග ගොවිපලක්",
-      "livestock": "පශු සම්පත් ගොවිපලක්",
-      "mixed": "මිශ්‍ර ගොවිපලක්",
-      "aquaculture": "ජල කෘෂිකර්මාන්තය",
-      "poultry": "කුකුළු ගොවිපලක්"
+      "crop": "බෝග"
     },
     "units": {
       "hectares": "හෙක්ටයාර්",
       "acres": "අක්කර",
-      "perches": "පර්චස්"
+      "perches": "පර්චස්",
+      "ha": "හෙක්ටයාර්",
+      "tons": "ටොන්",
+      "kg": "කිලෝ ගිරාම්"
     },
     "ownerInformation": "අයිතිකරු තොරතුරු",
     "farmManagers": "ගොවිපල කළමනාකරුවන්",
     "additionalInformation": "අමතර තොරතුරු",
-    "name": "නම",
     "email": "ඊමේල්",
     "phone": "දුරකථනය",
     "createdOn": "නිර්මාණය කළ දිනය",
     "lastUpdated": "අවසන් වරට යාවත්කාලීන කළ දිනය",
     "notSpecified": "සඳහන් කර නැත",
-    "notAvailable": "නැත"
+    "notAvailable": "නැත",
+    "errors": {
+      "fillRequired": "කරුණාකර සියලු අත්‍යවශ්‍ය ක්ෂේත්‍ර පුරවන්න",
+      "loadingDS": "ප්‍රාදේශීය ලේකම් කාර්යාලයන් පූරණය කිරීම අසාර්ථක",
+      "loadingGN": "ග්‍රාම නිලධාරි බෙදීම් පූරණය කිරීම අසාර්ථක",
+      "createFailed": "ගොවිපල නිර්මාණය කිරීම අසාර්ථක",
+      "sessionExpired": "කරුණාකර නැවත ලඩ් ඇතුල් වන්න.",
+      "noPermission": "ගොවිපල නිර්මාණය කිරීමට ඔබට අවසර නැත.",
+      "networkError": "ජාල දෝෂය. කරුණාකර ඔබේ සම්බන්ධතාවය පරීක්ෂා කරන්න."
+    },
+    "success": {
+      "created": "ගොවිපල සාර්ථකව නිර්මාණය කරන ලදී!"
+    }
   },
   "districts": {
     "colombo": "කොළඹ",

@@ -311,10 +311,10 @@ export const locationAPI = {
   getProvinces: () => api.get('/locations/provinces'),
   getDistricts: (provinceId?: string) =>
     api.get('/locations/districts', { params: { provinceId } }),
-  getDivisionalSecretariats: (districtId?: string) =>
-    api.get('/locations/divisional-secretariats', { params: { districtId } }),
-  getGramaNiladariDivisions: (dsId?: string) =>
-    api.get('/locations/grama-niladari-divisions', { params: { dsId } }),
+  getDivisionalSecretariats: (district: string) =>
+    api.get(`/locations/divisional-secretariats/${encodeURIComponent(district)}`),
+  getGramaNiladariDivisions: (district: string, ds: string) =>
+    api.get(`/locations/gn-divisions/${encodeURIComponent(district)}/${encodeURIComponent(ds)}`),
 }
 
 export default api
