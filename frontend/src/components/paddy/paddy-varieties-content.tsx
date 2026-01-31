@@ -86,6 +86,18 @@ export function PaddyVarietiesContent() {
 
   const uniqueTypes = Array.from(new Set(varieties.map((v) => v.type)))
 
+  const getTranslatedType = useCallback((type: string): string => {
+    return t(typeMap[type] || type)
+  }, [t])
+
+  const getTranslatedGrainShape = useCallback((shape: string): string => {
+    return t(shapeMap[shape] || shape)
+  }, [t])
+
+  const getTranslatedColor = useCallback((color: string): string => {
+    return t(colorMap[color] || color)
+  }, [t])
+
   const loadVarieties = useCallback(async () => {
     try {
       setLoading(true)
@@ -145,7 +157,7 @@ export function PaddyVarietiesContent() {
     }
 
     setFilteredVarieties(filtered)
-  }, [searchTerm, selectedType, selectedGrainShape, selectedGrainColor, varieties])
+  }, [searchTerm, selectedType, selectedGrainShape, selectedGrainColor, varieties, getTranslatedGrainShape])
 
   const handleClearFilters = () => {
     setSearchTerm('')
@@ -156,18 +168,6 @@ export function PaddyVarietiesContent() {
 
   const hasActiveFilters =
     searchTerm || selectedType || selectedGrainShape || selectedGrainColor
-
-  const getTranslatedType = (type: string): string => {
-    return t(typeMap[type] || type)
-  }
-
-  const getTranslatedGrainShape = (shape: string): string => {
-    return t(shapeMap[shape] || shape)
-  }
-
-  const getTranslatedColor = (color: string): string => {
-    return t(colorMap[color] || color)
-  }
 
   // Deduplicate grain shapes by translated value (remove duplicates with same translation)
   const deduplicatedGrainShapes = uniqueGrainShapes.filter((shape, index, arr) => {

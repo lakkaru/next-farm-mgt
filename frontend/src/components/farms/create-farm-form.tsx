@@ -104,8 +104,9 @@ export function CreateFarmForm() {
     if (name.includes('.')) {
       const keys = name.split('.')
       setFormData((prev) => {
-        const newData = { ...prev }
-        let current: any = newData
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const newData: any = JSON.parse(JSON.stringify(prev))
+        let current = newData
         for (let i = 0; i < keys.length - 1; i++) {
           current = current[keys[i]]
         }
@@ -247,20 +248,21 @@ export function CreateFarmForm() {
       await farmAPI.createFarm(farmData)
       toast.success(t('farms.success.created') || 'Farm created successfully!')
       router.push('/dashboard')
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Farm creation error:', err)
 
       let message = t('farms.errors.createFailed') || 'Failed to create farm'
+      const error = err as { response?: { status?: number; data?: { message?: string } }; request?: unknown }
 
-      if (err.response) {
-        if (err.response.status === 401) {
+      if (error.response) {
+        if (error.response.status === 401) {
           message = t('farms.errors.sessionExpired') || 'Please log in again.'
-        } else if (err.response.status === 403) {
+        } else if (error.response.status === 403) {
           message = t('farms.errors.noPermission') || 'You do not have permission to create farms.'
-        } else if (err.response.data?.message) {
-          message = err.response.data.message
+        } else if (error.response.data?.message) {
+          message = error.response.data.message
         }
-      } else if (err.request) {
+      } else if (error.request) {
         message = t('farms.errors.networkError') || 'Network error. Please check your connection.'
       }
 

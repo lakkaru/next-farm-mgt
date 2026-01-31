@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useI18n } from '@/contexts/i18n-context'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -379,17 +380,19 @@ export function DiseaseDetectionContent() {
           >
             {/* Image */}
             <div className="relative w-full h-40 bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center overflow-hidden">
-              <img
+              <Image
                 src={deficiency.imageUrl}
                 alt={deficiency.nutrient}
                 className="w-full h-full object-cover"
+                width={400}
+                height={160}
                 onError={(e) => {
-                  e.currentTarget.style.display = 'none'
+                  (e.target as HTMLImageElement).style.display = 'none'
                 }}
               />
               <Leaf className="h-12 w-12 text-slate-400 absolute" style={{ display: 'none' }} />
               <Badge
-                variant={getSeverityColor(deficiency.severity) as any}
+                variant={getSeverityColor(deficiency.severity)}
                 className="absolute top-2 right-2"
               >
                 {getSeverityTranslation(deficiency.severity)}
@@ -449,7 +452,7 @@ export function DiseaseDetectionContent() {
                   <DialogTitle className="text-xl">
                     {selectedDeficiency.nutrient} {t('diseaseDetection.deficiencyGuide')}
                   </DialogTitle>
-                  <Badge variant={getSeverityColor(selectedDeficiency.severity) as any}>
+                  <Badge variant={getSeverityColor(selectedDeficiency.severity)}>
                     {getSeverityTranslation(selectedDeficiency.severity)}
                   </Badge>
                 </div>
@@ -458,10 +461,12 @@ export function DiseaseDetectionContent() {
               <div className="space-y-6">
                 {/* Deficiency Image */}
                 <div className="w-full bg-slate-100 rounded-lg overflow-hidden flex items-center justify-center">
-                  <img
+                  <Image
                     src={selectedDeficiency.imageUrl}
                     alt={selectedDeficiency.nutrient}
                     className="w-full h-auto max-h-96 object-cover"
+                    width={600}
+                    height={400}
                   />
                 </div>
 
