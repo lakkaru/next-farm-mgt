@@ -256,12 +256,12 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
   // Stage implementation handlers
   const openStageDialog = (index: number) => {
     const stage = plan?.growingStages?.[index]
-    if (stage && !stage.isCompleted) {
+    if (stage) {
       setStageDialog({ open: true, index })
       setStageImplementationData({
-        implementedDate: new Date().toISOString().split('T')[0],
-        implementedEndDate: '',
-        notes: '',
+        implementedDate: stage.implementedDate || '',
+        implementedEndDate: stage.implementedEndDate || '',
+        notes: stage.implementationNotes || '',
       })
     }
   }
@@ -271,6 +271,8 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
 
     try {
       const updatedStages = [...(plan.growingStages || [])]
+      const isNewImplementation = !updatedStages[stageDialog.index].isCompleted
+      
       updatedStages[stageDialog.index] = {
         ...updatedStages[stageDialog.index],
         isCompleted: true,
@@ -293,7 +295,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
 
       setPlan({ ...plan, growingStages: updatedStages })
       setStageDialog({ open: false, index: -1 })
-      toast.success(t('seasonPlans.stageMarkedComplete'))
+      toast.success(t(isNewImplementation ? 'seasonPlans.stageMarkedComplete' : 'seasonPlans.stageUpdated'))
     } catch (err: any) {
       toast.error(err.response?.data?.message || t('common.error'))
     }
@@ -1051,6 +1053,17 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                               {t('seasonPlans.markComplete')}
                             </Button>
                           )}
+                          {stage.isCompleted && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-2"
+                              onClick={() => openStageDialog(index)}
+                            >
+                              <Edit className="h-4 w-4" />
+                              {t('seasonPlans.editImplementation')}
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1362,6 +1375,27 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
+            {/* Show previously saved dates if stage is already completed */}
+            {stageDialog.index >= 0 && plan?.growingStages?.[stageDialog.index]?.isCompleted && (
+              <div className="p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900 rounded-lg">
+                <p className="text-sm font-medium text-green-700 dark:text-green-300 mb-2">
+                  {t('seasonPlans.previousImplementation')}:
+                </p>
+                <div className="space-y-1 text-sm text-green-600 dark:text-green-400">
+                  {stageDialog.index >= 0 && plan?.growingStages?.[stageDialog.index]?.implementedDate && (
+                    <p>
+                      <span className="font-medium">{t('seasonPlans.startDate')}:</span> {formatDate(plan?.growingStages?.[stageDialog.index]?.implementedDate || '')}
+                    </p>
+                  )}
+                  {stageDialog.index >= 0 && plan?.growingStages?.[stageDialog.index]?.implementedEndDate && (
+                    <p>
+                      <span className="font-medium">{t('seasonPlans.endDate')}:</span> {formatDate(plan?.growingStages?.[stageDialog.index]?.implementedEndDate || '')}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="implementedDate">{t('seasonPlans.startDate')}</Label>
