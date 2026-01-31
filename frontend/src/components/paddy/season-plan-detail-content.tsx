@@ -1124,7 +1124,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                           {/* Scheduled Date */}
                           <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                             <Calendar className="h-3.5 w-3.5" />
-                            <span className="font-medium">{t('seasonPlans.viewPage.scheduled')}:</span>
+                            <span className="font-medium">{t('seasonPlans.scheduled')}:</span>
                             <span>{formatDate(app.applicationDate)}</span>
                           </div>
                           
@@ -1132,7 +1132,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                           {app.applied && app.appliedDate && (
                             <div className="flex items-center gap-2 mt-1 text-sm text-green-600">
                               <CheckCircle className="h-3.5 w-3.5" />
-                              <span className="font-medium">{t('seasonPlans.viewPage.implemented')}:</span>
+                              <span className="font-medium">{t('seasonPlans.implemented')}:</span>
                               <span>{formatDate(app.appliedDate)}</span>
                             </div>
                           )}
