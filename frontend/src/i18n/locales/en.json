@@ -24,7 +24,8 @@
     "enterArea": "Enter area",
     "all": "All",
     "filter": "Filter",
-    "clear": "Clear Filters"
+    "clear": "Clear Filters",
+    "notSpecified": "Not specified"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -418,6 +419,10 @@
     "duration": "Duration",
     "applied": "Mark as Applied",
     "notesPlaceholder": "Add any notes about the fertilizer application...",
+    "scheduled": "Scheduled",
+    "implemented": "Implemented",
+    "fertilizerType": "Fertilizer Type",
+    "quantity": "Quantity",
     "soilConditions": {
       "good": "Good",
       "fair": "Fair",
@@ -1499,6 +1504,7 @@
     "stageMarkedComplete": "Stage marked as complete",
     "stageUpdated": "Stage implementation updated",
     "fertilizerMarkedApplied": "Fertilizer marked as applied",
+    "fertilizerUpdated": "Fertilizer application updated",
     "confirmDeleteFertilizer": "Delete Fertilizer?",
     "deleteFertilizerWarning": "Are you sure you want to delete this fertilizer application?",
     "fertilizerDeleted": "Fertilizer application deleted",

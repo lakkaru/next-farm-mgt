@@ -1,4 +1,5 @@
-import { SeasonPlanDetailContent } from '@/components/season-plans/season-plan-detail-content'
+// import { SeasonPlanDetailContent } from '@/components/season-plans/season-plan-detail-content'
+import { SeasonPlanDetailContent } from '@/components/paddy/season-plan-detail-content'
 
 interface PageProps {
   params: {
@@ -7,5 +8,5 @@ interface PageProps {
 }
 
 export default function SeasonPlanDetailPage({ params }: PageProps) {
-  return <SeasonPlanDetailContent seasonPlanId={params.id} />
+  return <SeasonPlanDetailContent planId={params.id} />
 }

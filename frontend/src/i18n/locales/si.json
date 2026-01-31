@@ -49,7 +49,8 @@
     "optional": "අත්‍යවශ්‍ය නැත",
     "unit": "ඒකකය",
     "enterArea": "වපසරිය ඇතුලත් කරන්න",
-    "all": "සියලු"
+    "all": "සියලු",
+    "notSpecified": "සඳහන් කර නැත"
   },
   "navigation": {
     "home": "මුල් පිටුව",
@@ -413,6 +414,10 @@
     "addRemark": "සටහනක් එක් කරන්න",
     "editRemark": "සටහන සංස්කරණය",
     "implementedOn": "ක්‍රියාත්මක කළ දිනය",
+    "scheduled": "සැලසුම් කර ඇත",
+    "implemented": "ක්‍රියාත්මක කර ඇත",
+    "fertilizerType": "පොහොර වර්ගය",
+    "quantity": "ප්‍රමාණය",
     "appliedOn": "යෙදූ දිනය",
     "markStageComplete": "අදියර සම්පූර්ණ කරන්න",
     "editImplementation": "ක්‍රියාකරණය සංස්කරණය",
@@ -423,6 +428,7 @@
     "stageMarkedComplete": "අදියර සම්පූර්ණ ලෙස සලකුණු කර ඇත",
     "stageUpdated": "අදියර ක්‍රියාකරණය යාවත්කාලීන කර ඇත",
     "fertilizerMarkedApplied": "පොහොර යෙදූ ලෙස සලකුණු කර ඇත",
+    "fertilizerUpdated": "පොහොර යෙදීම යාවත්කාලීන කරන ලද",
     "confirmDeleteFertilizer": "පොහොර මකන්න?",
     "deleteFertilizerWarning": "මෙම පොහොර යෙදීම මකා දැමීමට ඔබට විශ්වාසද?",
     "fertilizerDeleted": "පොහොර යෙදීම මකා දමා ඇත",
@@ -519,6 +525,10 @@
       "deleted": "වාර සැලසුම සාර්ථකව මකා දමන ලදී",
       "created": "වාර සැලසුම සාර්ථකව නිර්මාණය කරන ලදී",
       "updated": "වාර සැලසුම සාර්ථකව යාවත්කාලීන කරන ලදී"
+    },
+    "viewPage": {
+      "scheduled": "සැලසුම් කර ඇත",
+      "implemented": "ක්‍රියාත්මක කර ඇත"
     }
   },
   "paddyVarieties": {
