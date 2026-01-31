@@ -24,6 +24,7 @@ const shapeMap: Record<string, string> = {
   'Long Slender': 'paddyVarieties.grainSizes.long_slender',
   'Extra Long Slender': 'paddyVarieties.grainSizes.extra_long_slender',
   'Long Medium': 'paddyVarieties.grainSizes.long_medium',
+  // 'Long medium': 'paddyVarieties.grainSizes.long_medium',
   'Intermediate Medium': 'paddyVarieties.grainSizes.intermediate_medium',
   'Short Round': 'paddyVarieties.grainSizes.short_round',
   'Intermediate Bold': 'paddyVarieties.grainSizes.intermediate_bold',
@@ -71,7 +72,7 @@ export function PaddyVarietiesContent() {
     new Set(
       varieties
         .filter((v) => v.characteristics?.grainQuality?.grainShape)
-        .map((v) => v.characteristics?.grainQuality?.grainShape)
+        .map((v) => v.characteristics!.grainQuality!.grainShape!)
     )
   )
 
@@ -79,7 +80,7 @@ export function PaddyVarietiesContent() {
     new Set(
       varieties
         .filter((v) => v.characteristics?.grainQuality?.pericarpColour)
-        .map((v) => v.characteristics?.grainQuality?.pericarpColour)
+        .map((v) => v.characteristics!.grainQuality!.pericarpColour!)
     )
   )
 
@@ -125,10 +126,14 @@ export function PaddyVarietiesContent() {
       filtered = filtered.filter((variety) => variety.type === selectedType)
     }
 
-    // Filter by grain shape (size)
+    // Filter by grain shape (size) - match by translated value
     if (selectedGrainShape) {
+      const selectedTranslated = getTranslatedGrainShape(selectedGrainShape)
       filtered = filtered.filter(
-        (variety) => variety.characteristics?.grainQuality?.grainShape === selectedGrainShape
+        (variety) => {
+          const varietyShape = variety.characteristics?.grainQuality?.grainShape
+          return varietyShape && getTranslatedGrainShape(varietyShape) === selectedTranslated
+        }
       )
     }
 
@@ -163,6 +168,12 @@ export function PaddyVarietiesContent() {
   const getTranslatedColor = (color: string): string => {
     return t(colorMap[color] || color)
   }
+
+  // Deduplicate grain shapes by translated value (remove duplicates with same translation)
+  const deduplicatedGrainShapes = uniqueGrainShapes.filter((shape, index, arr) => {
+    const translatedValue = getTranslatedGrainShape(shape)
+    return arr.findIndex(s => getTranslatedGrainShape(s) === translatedValue) === index
+  })
 
   if (error && !loading) {
     return (
@@ -235,7 +246,7 @@ export function PaddyVarietiesContent() {
                   className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
                 >
                   <option value="">{t('common.all')}</option>
-                  {uniqueGrainShapes.map((shape) => (
+                  {deduplicatedGrainShapes.map((shape) => (
                     <option key={shape} value={shape}>
                       {getTranslatedGrainShape(shape)}
                     </option>

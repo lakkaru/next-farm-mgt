@@ -905,10 +905,10 @@
       "drought_escape_variety": "වියළි කාලයට උචිත ප්‍රභේදය."
     },
     "types": {
-      "shortDuration": "කෙටි කාල සීමාවිතයි",
-      "mediumDuration": "මධ්‍යම කාල සීමාවිතයි",
-      "longDuration": "දිගු කාල සීමාවිතයි",
-      "longDurationPhotoperiod": "දිගු කාල සීමාවිතයි (ආලෝක සංවේදනීයතා)"
+      "shortDuration": "කෙටි කාල",
+      "mediumDuration": "මධ්‍යම කාල",
+      "longDuration": "දිගු කාල",
+      "longDurationPhotoperiod": "දිගු කාල (ආලෝක සංවේදනීයතා)"
     },
     "grainSizes": {
       "long_medium": "නාඩු",
