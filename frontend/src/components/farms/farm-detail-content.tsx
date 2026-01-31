@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -61,6 +62,7 @@ const farmTypeColors: Record<string, string> = {
 }
 
 export function FarmDetailContent({ farmId }: FarmDetailContentProps) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [farm, setFarm] = useState<Farm | null>(null)
   const [loading, setLoading] = useState(true)
@@ -74,12 +76,12 @@ export function FarmDetailContent({ farmId }: FarmDetailContentProps) {
       setFarm(response.data.data || response.data)
     } catch (err) {
       console.error('Error loading farm:', err)
-      setError('Failed to load farm details')
-      toast.error('Failed to load farm details')
+      setError(t('farms.loadingFailed'))
+      toast.error(t('farms.loadingFailed'))
     } finally {
       setLoading(false)
     }
-  }, [farmId])
+  }, [farmId, t])
 
   useEffect(() => {
     if (farmId) {
@@ -107,14 +109,14 @@ export function FarmDetailContent({ farmId }: FarmDetailContentProps) {
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-2xl font-bold">Farm Details</h1>
+          <h1 className="text-2xl font-bold">{t('farms.labels.farmDetails')}</h1>
         </div>
         <Card className="border-red-200 bg-red-50">
           <CardContent className="pt-6 flex items-center gap-3">
             <AlertCircle className="h-5 w-5 text-red-600" />
             <div>
-              <p className="font-medium text-red-900">{error || 'Farm not found'}</p>
-              <p className="text-sm text-red-700">Please go back and try again</p>
+              <p className="font-medium text-red-900">{error || t('common.error')}</p>
+              <p className="text-sm text-red-700">{t('common.error')}</p>
             </div>
           </CardContent>
         </Card>
@@ -135,13 +137,13 @@ export function FarmDetailContent({ farmId }: FarmDetailContentProps) {
             <p className="text-muted-foreground mt-1">
               {farm.district && farm.cultivationZone
                 ? `${farm.district}, ${farm.cultivationZone}`
-                : farm.district || 'Location not specified'}
+                : farm.district || t('farms.locationNotSpecified')}
             </p>
           </div>
         </div>
         <Button onClick={() => router.push(`/farms/${farmId}/edit`)} className="gap-2">
           <Pencil className="h-4 w-4" />
-          Edit Farm
+          {t('farms.labels.editFarm')}
         </Button>
       </div>
 
@@ -149,31 +151,31 @@ export function FarmDetailContent({ farmId }: FarmDetailContentProps) {
         {/* Basic Information */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Basic Information</CardTitle>
+            <CardTitle className="text-lg">{t('farms.basicInformation')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Farm Type</p>
+              <p className="text-sm font-medium text-muted-foreground">{t('farms.farmType')}</p>
               <Badge className={`mt-2 ${farmTypeColors[farm.farmType || farm.type || ''] || 'bg-gray-100 text-gray-800'}`}>
-                {farm.farmType || farm.type || 'Not specified'}
+                {farm.farmType || farm.type || t('farms.notSpecified')}
               </Badge>
             </div>
 
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Total Area</p>
+              <p className="text-sm font-medium text-muted-foreground">{t('farms.totalArea')}</p>
               <p className="mt-1 text-base">{formatArea(farm.totalArea || farm.area)}</p>
             </div>
 
             {farm.cultivatedArea && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Cultivated Area</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('farms.cultivatedArea')}</p>
                 <p className="mt-1 text-base">{formatArea(farm.cultivatedArea)}</p>
               </div>
             )}
 
             {farm.description && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Description</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('farms.description')}</p>
                 <p className="mt-1 text-sm text-foreground whitespace-pre-wrap">{farm.description}</p>
               </div>
             )}
@@ -183,40 +185,40 @@ export function FarmDetailContent({ farmId }: FarmDetailContentProps) {
         {/* Location Information */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Location Information</CardTitle>
+            <CardTitle className="text-lg">{t('farms.locationInformation')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {farm.district && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground">District</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('farms.district')}</p>
                 <p className="mt-1 text-base">{farm.district}</p>
               </div>
             )}
 
             {farm.cultivationZone && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Cultivation Zone</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('farms.cultivationZone')}</p>
                 <p className="mt-1 text-base">{farm.cultivationZone}</p>
               </div>
             )}
 
             {farm.divisionalSecretariat && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Divisional Secretariat</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('farms.divisionalSecretariat')}</p>
                 <p className="mt-1 text-base">{farm.divisionalSecretariat}</p>
               </div>
             )}
 
             {farm.gramaNiladhariDivision && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Grama Niladhari Division</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('farms.gramaNiladhariDivision')}</p>
                 <p className="mt-1 text-base">{farm.gramaNiladhariDivision}</p>
               </div>
             )}
 
             {farm.address && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Address</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('farms.address')}</p>
                 <p className="mt-1 text-base">{farm.address}</p>
               </div>
             )}
@@ -227,24 +229,24 @@ export function FarmDetailContent({ farmId }: FarmDetailContentProps) {
         {farm.owner && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Owner Information</CardTitle>
+              <CardTitle className="text-lg">{t('farms.ownerInformation')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Name</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('farms.name')}</p>
                 <p className="mt-1 text-base">
                   {farm.owner.profile?.firstName} {farm.owner.profile?.lastName}
                 </p>
               </div>
 
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Email</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('farms.email')}</p>
                 <p className="mt-1 text-base">{farm.owner.email}</p>
               </div>
 
               {farm.owner.contact?.phone && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Phone</p>
+                  <p className="text-sm font-medium text-muted-foreground">{t('farms.phone')}</p>
                   <p className="mt-1 text-base">{farm.owner.contact.phone}</p>
                 </div>
               )}
@@ -256,12 +258,14 @@ export function FarmDetailContent({ farmId }: FarmDetailContentProps) {
         {farm.managers && farm.managers.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Farm Managers</CardTitle>
+              <CardTitle className="text-lg">{t('farms.farmManagers')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {farm.managers.map((manager, idx) => (
                 <div key={manager._id} className={idx > 0 ? 'border-t pt-4' : ''}>
-                  <p className="text-sm font-medium text-muted-foreground">Manager {idx + 1}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {t('farms.manager')} {idx + 1}
+                  </p>
                   <p className="mt-1 text-base">
                     {manager.profile?.firstName} {manager.profile?.lastName}
                   </p>
@@ -275,19 +279,19 @@ export function FarmDetailContent({ farmId }: FarmDetailContentProps) {
         {/* Additional Information */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Additional Information</CardTitle>
+            <CardTitle className="text-lg">{t('farms.additionalInformation')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {farm.createdAt && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Created On</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('farms.createdOn')}</p>
                 <p className="mt-1 text-base">{new Date(farm.createdAt).toLocaleDateString()}</p>
               </div>
             )}
 
             {farm.updatedAt && (
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Last Updated</p>
+                <p className="text-sm font-medium text-muted-foreground">{t('farms.lastUpdated')}</p>
                 <p className="mt-1 text-base">{new Date(farm.updatedAt).toLocaleDateString()}</p>
               </div>
             )}

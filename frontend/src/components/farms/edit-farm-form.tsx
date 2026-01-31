@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -55,6 +56,7 @@ interface EditFarmFormProps {
 }
 
 export function EditFarmForm({ farmId }: EditFarmFormProps) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [farm, setFarm] = useState<Farm | null>(null)
   const [loading, setLoading] = useState(true)
@@ -209,12 +211,12 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
       }
 
       await farmAPI.updateFarm(farmId, updateData)
-      toast.success('Farm updated successfully!')
+      toast.success(t('farms.success.updated'))
       router.push(`/farms/${farmId}`)
     } catch (err) {
       console.error('Error updating farm:', err)
-      setError('Failed to update farm. Please try again.')
-      toast.error('Failed to update farm')
+      setError(t('farms.errors.updateFailed'))
+      toast.error(t('farms.errors.updateFailed'))
     } finally {
       setSubmitting(false)
     }
@@ -256,7 +258,7 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-2xl font-bold">Edit Farm</h1>
+        <h1 className="text-2xl font-bold">{t('farms.labels.editFarm')}</h1>
       </div>
 
       {error && (
@@ -270,11 +272,11 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
         {/* Basic Information */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
+            <CardTitle>{t('farms.basicInformation')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="name">Paddy Field Name *</Label>
+              <Label htmlFor="name">{t('farms.paddyFieldName')} *</Label>
               <Input
                 id="name"
                 name="name"
@@ -286,19 +288,19 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
             </div>
 
             <div>
-              <Label htmlFor="farmType">Farm Type *</Label>
+              <Label htmlFor="farmType">{t('farms.farmType')} *</Label>
               <Select value={formData.farmType} onValueChange={(value) => handleSelectChange('farmType', value)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select farm type" />
+                  <SelectValue placeholder={t('farms.selectFarmType')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="crop">Crop</SelectItem>
+                  <SelectItem value="crop">{t('farms.crop')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t('farms.description')}</Label>
               <Textarea
                 id="description"
                 name="description"
@@ -307,7 +309,7 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
                 placeholder="Provide details about your farm..."
                 rows={4}
               />
-              <p className="text-xs text-muted-foreground mt-1">Optional information</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('farms.optionalInformation')}</p>
             </div>
           </CardContent>
         </Card>
@@ -315,14 +317,14 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
         {/* Location Information */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Location Information</CardTitle>
+            <CardTitle>{t('farms.locationInformation')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="district">District *</Label>
+              <Label htmlFor="district">{t('farms.district')} *</Label>
               <Select value={formData.district} onValueChange={(value) => handleSelectChange('district', value)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a district" />
+                  <SelectValue placeholder={t('farms.selectDistrict')} />
                 </SelectTrigger>
                 <SelectContent>
                   {SRI_LANKAN_DISTRICTS.map((district) => (
@@ -335,24 +337,24 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
             </div>
 
             <div>
-              <Label htmlFor="cultivationZone">Cultivation Zone</Label>
+              <Label htmlFor="cultivationZone">{t('farms.cultivationZone')}</Label>
               <Input
                 id="cultivationZone"
                 name="cultivationZone"
                 value={formData.cultivationZone}
                 readOnly
-                placeholder="Auto-populated based on district"
+                placeholder={t('farms.autoPopulatedBased')}
               />
             </div>
 
             <div>
-              <Label htmlFor="divisionalSecretariat">Divisional Secretariat *</Label>
+              <Label htmlFor="divisionalSecretariat">{t('farms.divisionalSecretariat')} *</Label>
               <Select
                 value={formData.divisionalSecretariat}
                 onValueChange={(value) => handleSelectChange('divisionalSecretariat', value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={formData.district ? 'Select DS' : 'Select district first'} />
+                  <SelectValue placeholder={formData.district ? t('farms.selectDS') : t('farms.selectDistrictFirst')} />
                 </SelectTrigger>
                 <SelectContent>
                   {divisionalSecretariats.map((ds) => (
@@ -365,14 +367,14 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
             </div>
 
             <div>
-              <Label htmlFor="gramaNiladhariDivision">Grama Niladhari Division *</Label>
+              <Label htmlFor="gramaNiladhariDivision">{t('farms.gramaNiladhariDivision')} *</Label>
               <Select
                 value={formData.gramaNiladhariDivision}
                 onValueChange={(value) => handleSelectChange('gramaNiladhariDivision', value)}
               >
                 <SelectTrigger>
                   <SelectValue
-                    placeholder={formData.divisionalSecretariat ? 'Select GN Division' : 'Select DS first'}
+                    placeholder={formData.divisionalSecretariat ? t('farms.selectGNDivision') : t('farms.selectDSFirst')}
                   />
                 </SelectTrigger>
                 <SelectContent>
@@ -386,15 +388,15 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
             </div>
 
             <div>
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="address">{t('farms.address')}</Label>
               <Input
                 id="address"
                 name="address"
                 value={formData.address}
                 onChange={handleInputChange}
-                placeholder="Street address..."
+                placeholder={t('farms.streetAddress')}
               />
-              <p className="text-xs text-muted-foreground mt-1">Optional: Provide specific address</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('farms.specificAddress')}</p>
             </div>
           </CardContent>
         </Card>
@@ -402,12 +404,12 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
         {/* Area Information */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Area Information</CardTitle>
+            <CardTitle>{t('farms.areaInformation')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="totalAreaValue">Total Area *</Label>
+                <Label htmlFor="totalAreaValue">{t('farms.totalArea')} *</Label>
                 <Input
                   id="totalAreaValue"
                   name="totalAreaValue"
@@ -415,21 +417,21 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
                   step="0.01"
                   value={formData.totalAreaValue}
                   onChange={handleInputChange}
-                  placeholder="Enter value"
+                  placeholder={t('farms.enterValue')}
                   required
                 />
               </div>
 
               <div>
-                <Label htmlFor="totalAreaUnit">Unit *</Label>
+                <Label htmlFor="totalAreaUnit">{t('farms.unit')} *</Label>
                 <Select value={formData.totalAreaUnit} onValueChange={(value) => setFormData((prev) => ({ ...prev, totalAreaUnit: value }))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Unit" />
+                    <SelectValue placeholder={t('farms.unit')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="hectares">Hectares</SelectItem>
-                    <SelectItem value="acres">Acres</SelectItem>
-                    <SelectItem value="perches">Perches</SelectItem>
+                    <SelectItem value="hectares">{t('farms.hectares')}</SelectItem>
+                    <SelectItem value="acres">{t('farms.acres')}</SelectItem>
+                    <SelectItem value="perches">{t('farms.perches')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -437,7 +439,7 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="cultivatedAreaValue">Cultivated Area</Label>
+                <Label htmlFor="cultivatedAreaValue">{t('farms.cultivatedArea')}</Label>
                 <Input
                   id="cultivatedAreaValue"
                   name="cultivatedAreaValue"
@@ -445,21 +447,21 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
                   step="0.01"
                   value={formData.cultivatedAreaValue}
                   onChange={handleInputChange}
-                  placeholder="Enter value"
+                  placeholder={t('farms.enterValue')}
                 />
-                <p className="text-xs text-muted-foreground mt-1">Optional</p>
+                <p className="text-xs text-muted-foreground mt-1">{t('farms.optional')}</p>
               </div>
 
               <div>
-                <Label htmlFor="cultivatedAreaUnit">Unit</Label>
+                <Label htmlFor="cultivatedAreaUnit">{t('farms.unit')}</Label>
                 <Select value={formData.cultivatedAreaUnit} onValueChange={(value) => setFormData((prev) => ({ ...prev, cultivatedAreaUnit: value }))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Unit" />
+                    <SelectValue placeholder={t('farms.unit')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="hectares">Hectares</SelectItem>
-                    <SelectItem value="acres">Acres</SelectItem>
-                    <SelectItem value="perches">Perches</SelectItem>
+                    <SelectItem value="hectares">{t('farms.hectares')}</SelectItem>
+                    <SelectItem value="acres">{t('farms.acres')}</SelectItem>
+                    <SelectItem value="perches">{t('farms.perches')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -470,11 +472,11 @@ export function EditFarmForm({ farmId }: EditFarmFormProps) {
         {/* Action Buttons */}
         <div className="flex gap-4">
           <Button type="button" variant="outline" onClick={() => router.back()}>
-            Cancel
+            {t('farms.cancel')}
           </Button>
           <Button type="submit" disabled={submitting}>
             {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            {submitting ? 'Updating...' : 'Update Farm'}
+            {submitting ? t('farms.labels.updating') : t('farms.updateFarm')}
           </Button>
         </div>
       </form>
