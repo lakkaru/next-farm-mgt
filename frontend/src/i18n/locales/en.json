@@ -31,8 +31,13 @@
     "paddyVarieties": "Paddy Varieties",
     "createFarm": "Create Farm",
     "irrigationMethods": {
-      "irrigated": "Under Irrigation",
-      "rainFed": "Rain Fed"
+      "under_irrigation": "Under Irrigation",
+      "rain_fed": "Rain Fed"
+    },
+    "plantingMethods": {
+      "transplanting": "Transplanting",
+      "direct_seeding": "Direct Seeding",
+      "parachute_seeding": "Parachute Seeding"
     }
   },
   "navigation": {
@@ -445,8 +450,8 @@
     "selectPlantingMethod": "Select Planting Method",
     "plantingMethods": {
       "transplanting": "Transplanting",
-      "directSeeding": "Direct Seeding",
-      "parachuteSeeding": "Parachute Seeding"
+      "direct_seeding": "Direct Seeding",
+      "parachute_seeding": "Parachute Seeding"
     },
     "statuses": {
       "planned": "Planned",
