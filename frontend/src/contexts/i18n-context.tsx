@@ -17,8 +17,7 @@ if (!i18n.isInitialized) {
     .init({
       debug: process.env.NODE_ENV === 'development',
       load: 'languageOnly',
-      fallbackLng: ['si', 'en'],
-      lng: 'si',
+      fallbackLng: 'en',
       interpolation: {
         escapeValue: false,
       },
@@ -46,12 +45,24 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | undefined>(undefined)
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState('si')
+  const [language, setLanguage] = useState<string>('en')
+  const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
-    // Only update language after client mount to prevent hydration issues
-    const detectedLng = i18n.language || 'si'
+    // Get the language from localStorage or use detected language
+    const savedLng = typeof window !== 'undefined' 
+      ? localStorage.getItem('i18nextLng') 
+      : null
+    
+    const detectedLng = savedLng || i18n.language || 'en'
     setLanguage(detectedLng)
+    
+    // Only change language if different from current
+    if (i18n.language !== detectedLng) {
+      i18n.changeLanguage(detectedLng)
+    }
+    
+    setIsReady(true)
 
     const handleLanguageChange = (lng: string) => {
       setLanguage(lng)
