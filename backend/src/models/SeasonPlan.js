@@ -23,7 +23,7 @@ const seasonPlanSchema = new mongoose.Schema({
   irrigationMethod: {
     type: String,
     required: [true, 'Irrigation method is required'],
-    enum: ['Rain fed', 'Under irrigation'],
+    enum: ['rain_fed', 'under_irrigation'],
   },
   plantingMethod: {
     type: String,

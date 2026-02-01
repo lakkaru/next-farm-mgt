@@ -56,8 +56,8 @@
     "paddyVarieties": "වී ප්‍රභේද",
     "createFarm": "වී ගොවිපලක් එකතු කරන්න",
     "irrigationMethods": {
-      "irrigated": "Irrigated",
-      "rainFed": "Rainfed"
+      "irrigated": "වාරිමාර්ග යටතේ",
+      "rainFed": "වර්ෂා මත යැපෙන"
     }
   },
   "navigation": {
@@ -471,10 +471,6 @@
       "kg": "කි.ග්‍රෑ",
       "tons": "ටොන්",
       "bags": "ගෝණි"
-    },
-    "irrigationMethods": {
-      "Rain fed": "වර්ෂා මත යැපෙන",
-      "Under irrigation": "ජලාශ්‍රිත"
     },
     "selectPlantingMethod": "වගා කිරීමේ ක්‍රමය තෝරන්න",
     "plantingMethods": {

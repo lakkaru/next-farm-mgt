@@ -108,7 +108,7 @@ const seasonPlanValidation = [
     .withMessage('Season must be either maha or yala'),
   // climateZone will be auto-populated from farm
   body('irrigationMethod')
-    .isIn(['Rain fed', 'Under irrigation'])
+    .isIn(['rain_fed', 'under_irrigation'])
     .withMessage('Invalid irrigation method'),
   body('paddyVariety')
     .isMongoId()

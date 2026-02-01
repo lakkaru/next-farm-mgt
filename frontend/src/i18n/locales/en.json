@@ -31,8 +31,8 @@
     "paddyVarieties": "Paddy Varieties",
     "createFarm": "Create Farm",
     "irrigationMethods": {
-      "irrigated": "Irrigated",
-      "rainFed": "Rainfed"
+      "irrigated": "Under Irrigation",
+      "rainFed": "Rain Fed"
     }
   },
   "navigation": {

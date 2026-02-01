@@ -257,6 +257,7 @@ export function CreateSeasonPlanForm() {
         status: 'planned',
       }
 
+      console.log('Payload being sent:', payload);
       await seasonPlanAPI.createSeasonPlan(payload)
       setSuccess(true)
       
@@ -384,8 +385,8 @@ export function CreateSeasonPlanForm() {
                     <SelectValue placeholder={t('common.select')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Rain fed">{t('common.irrigationMethods.rainFed')}</SelectItem>
-                    <SelectItem value="Under irrigation">{t('common.irrigationMethods.irrigated')}</SelectItem>
+                    <SelectItem value="rain_fed">{t('common.irrigationMethods.rainFed')}</SelectItem>
+                    <SelectItem value="under_irrigation">{t('common.irrigationMethods.irrigated')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

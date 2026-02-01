@@ -440,7 +440,7 @@ const generateFertilizerSchedule = (cultivationDate, areaInAcres, irrigationMeth
   const isWetZone = wetZoneDistricts.includes(district);
   
   // Determine if irrigated or rainfed - simplified to only two methods
-  const isIrrigated = irrigationMethod === 'Under irrigation';
+  const isIrrigated = irrigationMethod === 'under_irrigation';
   
   // Extract duration in days and categorize
   let durationDays = 105; // default fallback

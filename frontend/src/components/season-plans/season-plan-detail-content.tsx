@@ -759,7 +759,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">{t('seasonPlans.irrigationMethod')}</p>
                   <p className="font-medium">
-                    {t(`seasonPlans.irrigationMethods.${plan.irrigationMethod}`)}
+                    {t(`common.irrigationMethods.${plan.irrigationMethod}`)}
                   </p>
                 </div>
               </div>
@@ -769,7 +769,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">{t('seasonPlans.plantingMethod')}</p>
                   <p className="font-medium">
-                    {t(`seasonPlans.plantingMethods.${plan.plantingMethod}`)}
+                    {t(`common.plantingMethods.${plan.plantingMethod}`)}
                   </p>
                 </div>
               </div>
