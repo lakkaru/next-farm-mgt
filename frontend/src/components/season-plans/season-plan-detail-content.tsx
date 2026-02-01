@@ -55,82 +55,11 @@ import {
   X,
   Plus,
 } from 'lucide-react'
-
-interface SeasonPlan {
-  _id: string
-  farmId: {
-    _id: string
-    name: string
-    district?: string
-  }
-  season: string
-  climateZone: string
-  irrigationMethod: string
-  plantingMethod: string
-  paddyVariety: {
-    _id: string
-    name: string
-  }
-  cultivatingArea: number
-  areaUnit: string
-  cultivationDate: string
-  transplantingDate?: string
-  status: string
-  expectedHarvest?: {
-    date: string
-    estimatedYield?: number
-  }
-  actualHarvest?: {
-    date: string
-    actualYield?: number
-  }
-  actualHarvestDate?: string
-  actualYield?: number
-  harvestQuality?: string
-  harvestNotes?: string
-  growingStages?: Array<{
-    stage: string
-    description?: string
-    startDate: string
-    endDate?: string
-    isCompleted: boolean
-    implementedDate?: string
-    implementedEndDate?: string
-    implementationNotes?: string
-  }>
-  fertilizerSchedule?: Array<{
-    stage?: string
-    type?: string
-    date: string
-    fertilizerType: string
-    quantity: number
-    amount?: number
-    unit: string
-    applied: boolean
-    status?: string
-    appliedDate?: string
-    implementedDate?: string
-    description?: string
-    applicationNotes?: string
-    notes?: string
-    fertilizers?: Record<string, number>
-  }>
-  expenses?: Array<{
-    category: string
-    description: string
-    amount: number
-    date: string
-    paymentMethod?: string
-  }>
-  dailyRemarks?: Array<{
-    date: string
-    remark: string
-    category?: string
-    title?: string
-    description?: string
-    images?: Array<any>
-  }>
-}
+import DeleteConfirmationDialog from './dialogs/DeleteConfirmationDialog';
+import StageImplementationDialog from './dialogs/StageImplementationDialog';
+import FertilizerImplementationDialog from './dialogs/FertilizerImplementationDialog';
+import { saveStageImplementation, saveFertilizerImplementation } from './handlers/seasonPlanHandlers';
+import { SeasonPlan } from '../../types/SeasonPlan';
 
 interface SeasonPlanDetailContentProps {
   planId: string
@@ -311,37 +240,27 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
     if (fertilizer) {
       setFertilizerDialog({ open: true, index })
       setFertilizerImplementationData({
-        appliedDate: fertilizer.appliedDate || new Date().toISOString().split('T')[0],
+        appliedDate: fertilizer.appliedDate || '',
         notes: fertilizer.notes || '',
       })
     }
   }
 
   const saveFertilizerImplementation = async () => {
-    if (!plan || fertilizerDialog.index < 0) return
+    if (!plan || !plan.fertilizerSchedule || fertilizerDialog.index < 0 || !plan._id) return
 
     try {
-      const updatedFertilizers = [...(plan.fertilizerSchedule || [])]
-      const isNewApplication = !updatedFertilizers[fertilizerDialog.index].applied
-      
-      updatedFertilizers[fertilizerDialog.index] = {
-        ...updatedFertilizers[fertilizerDialog.index],
-        applied: true,
-        appliedDate: fertilizerImplementationData.appliedDate,
-        notes: fertilizerImplementationData.notes,
-        date: fertilizerImplementationData.appliedDate // Ensure 'date' is included
-      }
+      const updatedFertilizerSchedule = plan.fertilizerSchedule.map((app, i) =>
+        i === fertilizerDialog.index
+          ? { ...app, ...fertilizerImplementationData, applied: true }
+          : app
+      );
 
-      await seasonPlanAPI.updateSeasonPlan(planId, {
-        ...plan,
-        fertilizerSchedule: updatedFertilizers,
-      })
-
-      setPlan({ ...plan, fertilizerSchedule: updatedFertilizers })
-      setFertilizerDialog({ open: false, index: -1 })
-      toast.success(t(isNewApplication ? 'seasonPlans.fertilizerMarkedApplied' : 'seasonPlans.fertilizerUpdated'))
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || t('common.error'))
+      await seasonPlanAPI.updateSeasonPlan(plan._id, { fertilizerSchedule: updatedFertilizerSchedule });
+      setPlan(prev => ({ ...prev, fertilizerSchedule: updatedFertilizerSchedule }));
+      setFertilizerDialog({ open: false, index: -1 });
+    } catch (err) {
+      toast.error(t('seasonPlans.errors.updateFailed'));
     }
   }
 
@@ -465,7 +384,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       await seasonPlanAPI.updateSeasonPlan(planId, {
         ...plan,
         actualHarvestDate: harvestData.harvestDate,
-        actualYield: parseFloat(harvestData.actualYield),
+        actualYield: harvestData.actualYield,
         harvestQuality: harvestData.quality,
         harvestNotes: harvestData.notes,
       })
@@ -473,7 +392,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       setPlan({
         ...plan,
         actualHarvestDate: harvestData.harvestDate,
-        actualYield: parseFloat(harvestData.actualYield),
+        actualYield: harvestData.actualYield,
         harvestQuality: harvestData.quality,
         harvestNotes: harvestData.notes,
       })
@@ -792,7 +711,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
 
       {/* Status Badge and Progress */}
       <div className="flex items-center gap-4">
-        <Badge variant={getStatusColor(plan.status)} className="text-sm px-3 py-1">
+        <Badge variant={getStatusColor(plan.status || 'planned')} className="text-sm px-3 py-1">
           {t(`seasonPlans.statuses.${plan.status}`)}
         </Badge>
         {plan.growingStages && plan.growingStages.length > 0 && (
@@ -889,7 +808,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                 <Calendar className="h-5 w-5 text-primary mt-0.5" />
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">{t('seasonPlans.cultivationDate')}</p>
-                  <p className="font-medium">{formatDate(plan.cultivationDate)}</p>
+                  <p className="font-medium">{formatDate(plan.cultivationDate || '')}</p>
                 </div>
               </div>
 
@@ -903,30 +822,30 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                 </div>
               )}
 
-              {plan.expectedHarvest && (
+              {plan.expectedHarvestDate && (
                 <div className="flex items-start gap-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-900">
                   <TrendingUp className="h-5 w-5 text-green-600 mt-0.5" />
                   <div className="flex-1">
                     <p className="text-sm text-muted-foreground">{t('seasonPlans.expectedHarvest')}</p>
-                    <p className="font-medium">{formatDate(plan.expectedHarvest.date)}</p>
-                    {plan.expectedHarvest.estimatedYield && (
+                    <p className="font-medium">{formatDate(plan.expectedHarvestDate)}</p>
+                    {plan.estimatedYield && (
                       <p className="text-sm text-green-600 font-medium mt-1">
-                        {t('seasonPlans.estimatedYield')}: {plan.expectedHarvest.estimatedYield} kg
+                        {t('seasonPlans.estimatedYield')}: {plan.estimatedYield} kg
                       </p>
                     )}
                   </div>
                 </div>
               )}
 
-              {plan.actualHarvest && (
+              {plan.actualHarvestDate && (
                 <div className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-900">
                   <CheckCircle className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div className="flex-1">
                     <p className="text-sm text-muted-foreground">{t('seasonPlans.actualHarvest')}</p>
-                    <p className="font-medium">{formatDate(plan.actualHarvest.date)}</p>
-                    {plan.actualHarvest.actualYield && (
+                    <p className="font-medium">{formatDate(plan.actualHarvestDate)}</p>
+                    {plan.actualYield && (
                       <p className="text-sm text-blue-600 font-medium mt-1">
-                        {t('seasonPlans.actualYield')}: {plan.actualHarvest.actualYield} kg
+                        {t('seasonPlans.actualYield')}: {plan.actualYield} kg
                       </p>
                     )}
                   </div>
@@ -1414,173 +1333,33 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       </Accordion>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('seasonPlans.confirmDelete')}</DialogTitle>
-            <DialogDescription>{t('seasonPlans.deleteWarning')}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={deleting}
-            >
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
-              {deleting ? 'Deleting...' : t('seasonPlans.deletePlan')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteConfirmationDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDelete}
+      />
 
       {/* Stage Implementation Dialog */}
-      <Dialog open={stageDialog.open} onOpenChange={(open) => setStageDialog({ ...stageDialog, open })}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('seasonPlans.markStageComplete')}</DialogTitle>
-            <DialogDescription>
-              {stageDialog.index >= 0 && plan?.growingStages?.[stageDialog.index] && (
-                <>Mark "{t(`seasonPlans.stages.${plan.growingStages?.[stageDialog.index]?.stage || ''}`)}" as completed</>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {/* Show previously saved dates if stage is already completed */}
-            {stageDialog.index >= 0 && plan?.growingStages?.[stageDialog.index]?.isCompleted && (
-              <div className="p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900 rounded-lg">
-                <p className="text-sm font-medium text-green-700 dark:text-green-300 mb-2">
-                  {t('seasonPlans.previousImplementation')}:
-                </p>
-                <div className="space-y-1 text-sm text-green-600 dark:text-green-400">
-                  {stageDialog.index >= 0 && plan?.growingStages?.[stageDialog.index]?.implementedDate && (
-                    <p>
-                      <span className="font-medium">{t('seasonPlans.startDate')}:</span> {plan?.growingStages?.[stageDialog.index]?.implementedDate}
-                    </p>
-                  )}
-                  {stageDialog.index >= 0 && plan?.growingStages?.[stageDialog.index]?.implementedEndDate && (
-                    <p>
-                      <span className="font-medium">{t('seasonPlans.endDate')}:</span> {plan?.growingStages?.[stageDialog.index]?.implementedEndDate}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="implementedDate">{t('seasonPlans.startDate')}</Label>
-                <Input
-                  id="implementedDate"
-                  type="date"
-                  value={stageImplementationData.implementedDate}
-                  onChange={(e) =>
-                    setStageImplementationData({ ...stageImplementationData, implementedDate: e.target.value })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="implementedEndDate">{t('seasonPlans.endDate')} ({t('seasonPlans.optional')})</Label>
-                <Input
-                  id="implementedEndDate"
-                  type="date"
-                  value={stageImplementationData.implementedEndDate}
-                  onChange={(e) =>
-                    setStageImplementationData({ ...stageImplementationData, implementedEndDate: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="stageNotes">{t('seasonPlans.implementationNotes')}</Label>
-              <Textarea
-                id="stageNotes"
-                placeholder={t('seasonPlans.implementationNotesPlaceholder')}
-                value={stageImplementationData.notes}
-                onChange={(e) =>
-                  setStageImplementationData({ ...stageImplementationData, notes: e.target.value })
-                }
-                rows={4}
-                className="resize-none"
-              />
-              <p className="text-xs text-muted-foreground">{t('seasonPlans.notesHint')}</p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setStageDialog({ open: false, index: -1 })}>
-              {t('common.cancel')}
-            </Button>
-            <Button onClick={saveStageImplementation}>{t('common.save')}</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <StageImplementationDialog
+        open={stageDialog.open}
+        onOpenChange={(open) => setStageDialog({ ...stageDialog, open })}
+        stageData={stageImplementationData}
+        onSave={saveStageImplementation}
+        onChange={(field, value) =>
+          setStageImplementationData((prev) => ({ ...prev, [field]: value }))
+        }
+      />
 
       {/* Fertilizer Implementation Dialog */}
-      <Dialog
+      <FertilizerImplementationDialog
         open={fertilizerDialog.open}
         onOpenChange={(open) => setFertilizerDialog({ ...fertilizerDialog, open })}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('seasonPlans.markFertilizerApplied')}</DialogTitle>
-            <DialogDescription>
-              {fertilizerDialog.index >= 0 && plan?.fertilizerSchedule?.[fertilizerDialog.index] && (
-                <>Mark "{plan.fertilizerSchedule?.[fertilizerDialog.index]?.fertilizerType || ''}" as applied</>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {/* Show previously saved application date if already applied */}
-            {fertilizerDialog.index >= 0 && plan?.fertilizerSchedule?.[fertilizerDialog.index]?.applied && (
-              <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-lg">
-                <p className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-2">
-                  {t('seasonPlans.previousImplementation')}:
-                </p>
-                <div className="space-y-1 text-sm text-blue-600 dark:text-blue-400">
-                  {fertilizerDialog.index >= 0 && plan?.fertilizerSchedule?.[fertilizerDialog.index]?.appliedDate && (
-                    <p>
-                      <span className="font-medium">{t('seasonPlans.appliedDate')}:</span> {formatDate(plan?.fertilizerSchedule?.[fertilizerDialog.index]?.appliedDate || '')}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="appliedDate">{t('seasonPlans.appliedDate')}</Label>
-              <Input
-                id="appliedDate"
-                type="date"
-                value={fertilizerImplementationData.appliedDate}
-                onChange={(e) =>
-                  setFertilizerImplementationData({
-                    ...fertilizerImplementationData,
-                    appliedDate: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="fertilizerNotes">{t('seasonPlans.notes')}</Label>
-              <Textarea
-                id="fertilizerNotes"
-                placeholder={t('seasonPlans.notesPlaceholder')}
-                value={fertilizerImplementationData.notes}
-                onChange={(e) =>
-                  setFertilizerImplementationData({ ...fertilizerImplementationData, notes: e.target.value })
-                }
-                rows={3}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setFertilizerDialog({ open: false, index: -1 })}>
-              {t('common.cancel')}
-            </Button>
-            <Button onClick={saveFertilizerImplementation}>{t('common.save')}</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        fertilizerData={fertilizerImplementationData}
+        onSave={saveFertilizerImplementation}
+        onChange={(field, value) =>
+          setFertilizerImplementationData((prev) => ({ ...prev, [field]: value }))
+        }
+      />
 
       {/* Delete Fertilizer Confirmation Dialog */}
       <Dialog open={deletingFertilizer} onOpenChange={setDeletingFertilizer}>

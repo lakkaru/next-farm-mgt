@@ -19,6 +19,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { ArrowLeft, Plus, Trash2, Loader2 } from 'lucide-react';
+import { AxiosResponse } from 'axios';
+import { SeasonPlan } from '@/types/SeasonPlan';
 
 interface Farm {
   _id: string;
@@ -35,7 +37,7 @@ interface GrowingStage {
   stage: string;
   startDate: string;
   endDate: string;
-  completed: boolean;
+  isCompleted: boolean;
   notes?: string;
 }
 
@@ -43,7 +45,7 @@ interface FertilizerApplication {
   type: string;
   amount: number;
   unit: string;
-  applicationDate: string;
+  appliedDate: string;
   applied: boolean;
   notes?: string;
 }
@@ -58,32 +60,6 @@ interface Expense {
 interface DailyRemark {
   date: string;
   remark: string;
-}
-
-interface SeasonPlan {
-  _id: string;
-  farmId: Farm | string;
-  season: string;
-  cultivationDate: string;
-  seedingDate?: string;
-  transplantingDate?: string;
-  expectedHarvestDate: string;
-  actualHarvestDate?: string;
-  estimatedYield?: number;
-  actualYield?: number;
-  yieldUnit?: string;
-  district: string;
-  climateZone: string;
-  irrigationMethod: string;
-  plantingMethod: string;
-  paddyVariety: PaddyVariety | string;
-  cultivatingArea: number;
-  areaUnit: string;
-  status: string;
-  growingStages?: GrowingStage[];
-  fertilizerSchedule?: FertilizerApplication[];
-  expenses?: Expense[];
-  dailyRemarks?: DailyRemark[];
 }
 
 interface EditSeasonPlanContentProps {
@@ -125,12 +101,8 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
 
         setFormData({
           ...planResponse.data,
-          farmId: typeof planResponse.data.farmId === 'object' 
-            ? planResponse.data.farmId._id 
-            : planResponse.data.farmId,
-          paddyVariety: typeof planResponse.data.paddyVariety === 'object'
-            ? planResponse.data.paddyVariety._id
-            : planResponse.data.paddyVariety,
+          farmId: typeof planResponse.data.farmId === 'object' ? planResponse.data.farmId._id : planResponse.data.farmId,
+          paddyVariety: typeof planResponse.data.paddyVariety === 'object' ? planResponse.data.paddyVariety._id : planResponse.data.paddyVariety,
         });
         setFarms(farmsResponse.data || []);
         setPaddyVarieties(varietiesResponse.data || []);
@@ -161,11 +133,11 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
   };
 
   const handleChange = useCallback((field: string, value: unknown) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev: Partial<SeasonPlan>) => ({ ...prev, [field]: value }));
   }, []);
 
   const addGrowingStage = useCallback(() => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<SeasonPlan>) => ({
       ...prev,
       growingStages: [
         ...(prev.growingStages || []),
@@ -173,30 +145,30 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
           stage: 'land_preparation',
           startDate: new Date().toISOString().split('T')[0],
           endDate: new Date().toISOString().split('T')[0],
-          completed: false,
+          isCompleted: false,
         },
       ],
     }));
   }, []);
 
   const removeGrowingStage = useCallback((index: number) => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<SeasonPlan>) => ({
       ...prev,
-      growingStages: prev.growingStages?.filter((_, i) => i !== index),
+      growingStages: prev.growingStages?.filter((_: any, i: number) => i !== index),
     }));
   }, []);
 
   const updateGrowingStage = useCallback((index: number, field: string, value: unknown) => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<SeasonPlan>) => ({
       ...prev,
-      growingStages: prev.growingStages?.map((stage, i) =>
+      growingStages: prev.growingStages?.map((stage: any, i: number) =>
         i === index ? { ...stage, [field]: value } : stage
       ),
     }));
   }, []);
 
   const addFertilizerApplication = useCallback(() => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<SeasonPlan>) => ({
       ...prev,
       fertilizerSchedule: [
         ...(prev.fertilizerSchedule || []),
@@ -204,31 +176,34 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
           type: '',
           amount: 0,
           unit: 'kg',
-          applicationDate: new Date().toISOString().split('T')[0],
+          appliedDate: new Date().toISOString().split('T')[0],
+          fertilizerType: '',
+          quantity: 0,
           applied: false,
+          date: new Date().toISOString().split('T')[0],
         },
       ],
     }));
   }, []);
 
   const removeFertilizerApplication = useCallback((index: number) => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<SeasonPlan>) => ({
       ...prev,
-      fertilizerSchedule: prev.fertilizerSchedule?.filter((_, i) => i !== index),
+      fertilizerSchedule: prev.fertilizerSchedule?.filter((_: any, i: number) => i !== index),
     }));
   }, []);
 
   const updateFertilizerApplication = useCallback((index: number, field: string, value: unknown) => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<SeasonPlan>) => ({
       ...prev,
-      fertilizerSchedule: prev.fertilizerSchedule?.map((app, i) =>
+      fertilizerSchedule: prev.fertilizerSchedule?.map((app: any, i: number) =>
         i === index ? { ...app, [field]: value } : app
       ),
     }));
   }, []);
 
   const addExpense = useCallback(() => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<SeasonPlan>) => ({
       ...prev,
       expenses: [
         ...(prev.expenses || []),
@@ -243,23 +218,23 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
   }, []);
 
   const removeExpense = useCallback((index: number) => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<SeasonPlan>) => ({
       ...prev,
-      expenses: prev.expenses?.filter((_, i) => i !== index),
+      expenses: prev.expenses?.filter((_: any, i: number) => i !== index),
     }));
   }, []);
 
   const updateExpense = useCallback((index: number, field: string, value: unknown) => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<SeasonPlan>) => ({
       ...prev,
-      expenses: prev.expenses?.map((exp, i) =>
+      expenses: prev.expenses?.map((exp: any, i: number) =>
         i === index ? { ...exp, [field]: value } : exp
       ),
     }));
   }, []);
 
   const addDailyRemark = useCallback(() => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<SeasonPlan>) => ({
       ...prev,
       dailyRemarks: [
         ...(prev.dailyRemarks || []),
@@ -272,16 +247,16 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
   }, []);
 
   const removeDailyRemark = useCallback((index: number) => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<SeasonPlan>) => ({
       ...prev,
-      dailyRemarks: prev.dailyRemarks?.filter((_, i) => i !== index),
+      dailyRemarks: prev.dailyRemarks?.filter((_: any, i: number) => i !== index),
     }));
   }, []);
 
   const updateDailyRemark = useCallback((index: number, field: string, value: unknown) => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<SeasonPlan>) => ({
       ...prev,
-      dailyRemarks: prev.dailyRemarks?.map((remark, i) =>
+      dailyRemarks: prev.dailyRemarks?.map((remark: any, i: number) =>
         i === index ? { ...remark, [field]: value } : remark
       ),
     }));
@@ -327,8 +302,8 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
               <div className="space-y-2">
                 <Label htmlFor="farmId">{t('seasonPlans.farm')}</Label>
                 <Select
-                  value={formData.farmId as string}
-                  onValueChange={(value) => handleChange('farmId', value)}
+                  value={formData.farmId?._id || ''}
+                  onValueChange={(value) => handleChange('farmId', { _id: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -405,8 +380,8 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
               <div className="space-y-2">
                 <Label htmlFor="paddyVariety">{t('seasonPlans.paddyVariety')}</Label>
                 <Select
-                  value={formData.paddyVariety as string}
-                  onValueChange={(value) => handleChange('paddyVariety', value)}
+                  value={formData.paddyVariety?._id || ''}
+                  onValueChange={(value) => handleChange('paddyVariety', { _id: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -590,7 +565,7 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            {formData.growingStages?.map((stage, index) => (
+            {formData.growingStages?.map((stage: any, index: number) => (
               <div key={index} className="border rounded-lg p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Stage {index + 1}</span>
@@ -655,8 +630,8 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
                     <Label className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        checked={stage.completed}
-                        onChange={(e) => updateGrowingStage(index, 'completed', e.target.checked)}
+                        checked={stage.isCompleted}
+                        onChange={(e) => updateGrowingStage(index, 'isCompleted', e.target.checked)}
                       />
                       Completed
                     </Label>
@@ -691,7 +666,7 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            {formData.fertilizerSchedule?.map((app, index) => (
+            {formData.fertilizerSchedule?.map((app: any, index: number) => (
               <div key={index} className="border rounded-lg p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Application {index + 1}</span>
@@ -788,7 +763,7 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            {formData.expenses?.map((expense, index) => (
+            {formData.expenses?.map((expense: any, index: number) => (
               <div key={index} className="border rounded-lg p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Expense {index + 1}</span>
@@ -886,7 +861,7 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
             </Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            {formData.dailyRemarks?.map((remark, index) => (
+            {formData.dailyRemarks?.map((remark: any, index: number) => (
               <div key={index} className="border rounded-lg p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Remark {index + 1}</span>
