@@ -52,7 +52,9 @@
     "perFieldKg": "ගොවිපලට (කි.ග්‍රෑ.)",
     "enterArea": "වපසරිය ඇතුලත් කරන්න",
     "all": "සියලු",
-    "notSpecified": "සඳහන් කර නැත"
+    "notSpecified": "සඳහන් කර නැත",
+    "paddyVarieties": "වී ප්‍රභේද",
+    "createFarm": "වී ගොවිපලක් එකතු කරන්න"
   },
   "navigation": {
     "home": "මුල් පිටුව",

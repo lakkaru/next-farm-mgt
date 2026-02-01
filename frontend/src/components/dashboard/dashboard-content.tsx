@@ -359,7 +359,7 @@ export function DashboardContent() {
               onClick={() => handleCardClick('paddyVarieties')}
             >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">{t('dashboard.paddyVarieties')}</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('common.paddyVarieties')}</CardTitle>
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -503,7 +503,7 @@ export function DashboardContent() {
                 <Link href="/farms/create" className="block">
                   <Button variant="default" className="w-full justify-start gap-2">
                     <Tractor className="h-4 w-4" />
-                    {t('dashboard.createFarm')}
+                    {t('common.createFarm')}
                   </Button>
                 </Link>
                 <Link href="/season-plans/create" className="block">

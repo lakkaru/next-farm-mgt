@@ -27,7 +27,9 @@
     "all": "All",
     "filter": "Filter",
     "clear": "Clear Filters",
-    "notSpecified": "Not specified"
+    "notSpecified": "Not specified",
+    "paddyVarieties": "Paddy Varieties",
+    "createFarm": "Create Farm"
   },
   "navigation": {
     "dashboard": "Dashboard",
