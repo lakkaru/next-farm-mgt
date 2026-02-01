@@ -342,6 +342,7 @@
     "requiredFieldsNote": "* සලකුණු කරන ලද ක්ෂේත්‍ර අත්‍යවශ්‍ය වේ"
   },
   "seasonPlans": {
+    "title": "කන්න සැලසුම්",
     "seasonPlanDetails": "වාර සැලසුම් විස්තර",
     "season": "කන්නය",
     "farm": "ගොවිපල",
@@ -458,7 +459,6 @@
     "deleteRemarkWarning": "මෙම සටහන මකා දැමීමට ඔබට විශ්වාසද?",
     "remarkDeleted": "සටහන මකා දමා ඇත",
     "notes": "සටහන්",
-    "title": "මාතෘකාව",
     "category": "කාණ්ඩය",
     "seasons": {
       "maha": "මහ",
