@@ -365,8 +365,8 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Irrigated">{t('seasonPlans.irrigationMethods.irrigated')}</SelectItem>
-                    <SelectItem value="Rain fed">{t('seasonPlans.irrigationMethods.rainFed')}</SelectItem>
+                    <SelectItem value="under_irrigation">{t('common.irrigationMethods.under_irrigation')}</SelectItem>
+                    <SelectItem value="rain_fed">{t('common.irrigationMethods.rain_fed')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -382,9 +382,9 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="direct_seeding">{t('seasonPlans.plantingMethods.directSeeding')}</SelectItem>
-                    <SelectItem value="transplanting">{t('seasonPlans.plantingMethods.transplanting')}</SelectItem>
-                    <SelectItem value="parachute_seeding">{t('seasonPlans.plantingMethods.parachuteSeeding')}</SelectItem>
+                    <SelectItem value="direct_seeding">{t('common.plantingMethods.direct_seeding')}</SelectItem>
+                    <SelectItem value="transplanting">{t('common.plantingMethods.transplanting')}</SelectItem>
+                    <SelectItem value="parachute_seeding">{t('common.plantingMethods.parachute_seeding')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -454,7 +454,7 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
             {t('common.cancel')}
           </Button>
           <Button type="submit" variant="default" disabled={saving}>
-            {t('seasonPlans.updatePlan')}
+            {t('common.update')}
           </Button>
         </div>
       </form>

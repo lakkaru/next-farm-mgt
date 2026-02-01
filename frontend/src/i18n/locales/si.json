@@ -28,7 +28,7 @@
     "view": "බලන්න",
     "add": "එකතු කරන්න",
     "remove": "ඉවත් කරන්න",
-    "update": "යාවත්කාලීන",
+    "update": "යාවත්කාලීන කරන්න",
     "create": "නිර්මාණය",
     "select": "තෝරන්න",
     "choose": "තේරීම",
@@ -62,7 +62,7 @@
     "plantingMethods": {
       "direct_seeding": "සෘජු බීජ වැපිරීම",
       "transplanting": "පැල සිටුවීම",
-      "parachute_seeding": "පැරෂූට් බීජ වැපිරීම"
+      "parachute_seeding": "පැරෂූට් පැල වැපිරීම"
     }
   },
   "navigation": {
