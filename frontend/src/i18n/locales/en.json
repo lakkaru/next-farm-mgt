@@ -438,9 +438,10 @@
     },
     "irrigationMethods": {
       "Rain fed": "Rainfed",
-      "Under irrigation": "Irrigated",
-      "rainFed": "Rain fed",
-      "underIrrigation": "Under irrigation"
+      "Under irrigation": "Under irrigation",
+      "irrigated": "Irrigated",
+      "rainFed": "Rainfed"
+
     },
     "plantingMethods": {
       "direct_seeding": "Direct Seeding",

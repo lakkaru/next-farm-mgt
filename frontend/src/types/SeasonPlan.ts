@@ -72,3 +72,11 @@ export interface SeasonPlan {
     images?: Array<any>;
   }>;
 }
+
+export interface Farm {
+  _id: string;
+  name: string;
+  location?: Record<string, any>;
+  totalArea?: Record<string, any>;
+  cultivatedArea?: Record<string, any>;
+}

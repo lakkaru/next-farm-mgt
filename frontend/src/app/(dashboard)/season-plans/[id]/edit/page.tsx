@@ -1,11 +1,11 @@
 'use client'
 
-import { EditSeasonPlanForm } from '@/components/paddy/edit-season-plan-form'
+import EditSeasonPlanContent from '@/components/season-plans/edit-season-plan-content'
 
 interface EditSeasonPlanPageProps {
   params: { id: string }
 }
 
 export default function EditSeasonPlanPage({ params }: EditSeasonPlanPageProps) {
-  return <EditSeasonPlanForm planId={params.id} />
+  return <EditSeasonPlanContent id={params.id} />
 }
