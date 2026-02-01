@@ -54,7 +54,11 @@
     "all": "සියලු",
     "notSpecified": "සඳහන් කර නැත",
     "paddyVarieties": "වී ප්‍රභේද",
-    "createFarm": "වී ගොවිපලක් එකතු කරන්න"
+    "createFarm": "වී ගොවිපලක් එකතු කරන්න",
+    "irrigationMethods": {
+      "irrigated": "Irrigated",
+      "rainFed": "Rainfed"
+    }
   },
   "navigation": {
     "home": "මුල් පිටුව",
@@ -472,10 +476,11 @@
       "Rain fed": "වර්ෂා මත යැපෙන",
       "Under irrigation": "ජලාශ්‍රිත"
     },
+    "selectPlantingMethod": "වගා කිරීමේ ක්‍රමය තෝරන්න",
     "plantingMethods": {
-      "direct_seeding": "සෘජු බීජ වැපිරීම",
+      "directSeeding": "සෘජු බීජ වැපිරීම",
       "transplanting": "පැල සිටුවීම",
-      "parachute_seeding": "පැරෂූට් බීජ වැපිරීම"
+      "parachuteSeeding": "පැරෂූට් බීජ වැපිරීම"
     },
     "statuses": {
       "planned": "සැලසුම්කළ",

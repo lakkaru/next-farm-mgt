@@ -29,7 +29,11 @@
     "clear": "Clear Filters",
     "notSpecified": "Not specified",
     "paddyVarieties": "Paddy Varieties",
-    "createFarm": "Create Farm"
+    "createFarm": "Create Farm",
+    "irrigationMethods": {
+      "irrigated": "Irrigated",
+      "rainFed": "Rainfed"
+    }
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -438,17 +442,9 @@
       "tons": "tons",
       "bags": "bags"
     },
-    "irrigationMethods": {
-      "Rain fed": "Rainfed",
-      "Under irrigation": "Under irrigation",
-      "irrigated": "Irrigated",
-      "rainFed": "Rainfed"
-
-    },
+    "selectPlantingMethod": "Select Planting Method",
     "plantingMethods": {
-      "direct_seeding": "Direct Seeding",
       "transplanting": "Transplanting",
-      "parachute_seeding": "Parachute Seeding",
       "directSeeding": "Direct Seeding",
       "parachuteSeeding": "Parachute Seeding"
     },

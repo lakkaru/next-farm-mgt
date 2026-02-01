@@ -61,7 +61,7 @@ export function CreateSeasonPlanForm() {
     farmId: '',
     season: '',
     irrigationMethod: '',
-    plantingMethod: 'direct_seeding',
+    plantingMethod: '',
     paddyVariety: '',
     cultivatingArea: '',
     areaUnit: 'acres',
@@ -330,7 +330,7 @@ export function CreateSeasonPlanForm() {
               <Label htmlFor="farmId">{t('seasonPlans.farm')} *</Label>
               <Select value={formData.farmId} onValueChange={handleFarmChange}>
                 <SelectTrigger>
-                  <SelectValue placeholder={t('dashboard.selectFarm')} />
+                  <SelectValue placeholder={t('common.select')} />
                 </SelectTrigger>
                 <SelectContent>
                   {farms.map(farm => (
@@ -367,7 +367,7 @@ export function CreateSeasonPlanForm() {
                 <Label htmlFor="season">{t('seasonPlans.season')} *</Label>
                 <Select value={formData.season} onValueChange={(value) => setFormData(prev => ({ ...prev, season: value }))}>
                   <SelectTrigger>
-                    <SelectValue placeholder={t('seasonPlans.selectSeason')} />
+                    <SelectValue placeholder={t('common.select')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="maha">{t('seasonPlans.seasons.maha')}</SelectItem>
@@ -384,8 +384,8 @@ export function CreateSeasonPlanForm() {
                     <SelectValue placeholder={t('common.select')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Rain fed">{t('seasonPlans.irrigationMethods.rainFed')}</SelectItem>
-                    <SelectItem value="Under irrigation">{t('seasonPlans.irrigationMethods.underIrrigation')}</SelectItem>
+                    <SelectItem value="Rain fed">{t('common.irrigationMethods.rainFed')}</SelectItem>
+                    <SelectItem value="Under irrigation">{t('common.irrigationMethods.irrigated')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -396,8 +396,8 @@ export function CreateSeasonPlanForm() {
               <Label htmlFor="plantingMethod">{t('seasonPlans.plantingMethod')} *</Label>
               <Select value={formData.plantingMethod} onValueChange={(value) => setFormData(prev => ({ ...prev, plantingMethod: value, transplantingDate: '' }))}>
                 <SelectTrigger>
-                  <SelectValue placeholder={t('seasonPlans.selectPlantingMethod')} />
-                </SelectTrigger>
+                    <SelectValue placeholder={t('common.select')} />
+                  </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="direct_seeding">{t('seasonPlans.plantingMethods.directSeeding')}</SelectItem>
                   <SelectItem value="transplanting">{t('seasonPlans.plantingMethods.transplanting')}</SelectItem>
@@ -411,7 +411,7 @@ export function CreateSeasonPlanForm() {
               <Label htmlFor="paddyVariety">{t('seasonPlans.paddyVariety')} *</Label>
               <Select value={formData.paddyVariety} onValueChange={handleVarietyChange}>
                 <SelectTrigger>
-                  <SelectValue placeholder={t('seasonPlans.selectPaddyVariety')} />
+                  <SelectValue placeholder={t('common.select')} />
                 </SelectTrigger>
                 <SelectContent>
                   {paddyVarieties.map(variety => {
