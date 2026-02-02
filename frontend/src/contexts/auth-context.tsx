@@ -12,8 +12,11 @@ interface User {
   profile: {
     firstName: string
     lastName: string
-    phone?: string
     role: string
+    avatar?: string
+  }
+  contact?: {
+    phone: string
   }
   roles?: string[]
   role?: string
@@ -261,3 +264,6 @@ export function useAuthContext() {
   }
   return context
 }
+
+// Alias for convenience
+export const useAuth = useAuthContext

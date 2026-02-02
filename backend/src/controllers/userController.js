@@ -191,12 +191,26 @@ const getUserProfile = asyncHandler(async (req, res) => {
     });
   }
 
+  // Generate signed URL for avatar if it exists
+  let avatarUrl = null;
+  if (user.profile?.avatar) {
+    const r2Service = require('../services/r2Service');
+    try {
+      avatarUrl = await r2Service.getSignedUrl(user.profile.avatar, 604800); // 7 days
+    } catch (error) {
+      console.error('Error generating signed URL for avatar:', error);
+    }
+  }
+
   res.status(200).json({
     success: true,
     data: {
       _id: user._id,
       email: user.email,
-      profile: user.profile,
+      profile: {
+        ...user.profile.toObject(),
+        avatar: avatarUrl || user.profile.avatar,
+      },
       contact: user.contact,
       preferences: user.preferences,
       role: user.role,
@@ -353,18 +367,42 @@ const uploadProfileAvatar = asyncHandler(async (req, res) => {
     });
   }
 
-  // Update user avatar path
-  const avatarUrl = `/api/users/avatar/${req.file.filename}`;
-  user.profile.avatar = avatarUrl;
-  await user.save();
+  try {
+    const r2Service = require('../services/r2Service');
+    
+    // Upload to R2 in profile-avatars folder
+    const uploadResult = await r2Service.uploadFile(
+      req.file.buffer,
+      req.file.originalname,
+      req.file.mimetype,
+      'profile-avatars'
+    );
 
-  res.status(200).json({
-    success: true,
-    data: {
-      avatar: avatarUrl,
-    },
-    message: 'Avatar uploaded successfully',
-  });
+    console.log('R2 Upload Result:', uploadResult);
+
+    // Store the R2 key (not the URL) in the database
+    user.profile.avatar = uploadResult.key;
+    await user.save();
+
+    console.log('User avatar key stored:', user.profile.avatar);
+
+    // Generate a signed URL for the response (valid for 7 days)
+    const signedUrl = await r2Service.getSignedUrl(uploadResult.key, 604800); // 7 days
+
+    res.status(200).json({
+      success: true,
+      data: {
+        avatar: signedUrl,
+      },
+      message: 'Avatar uploaded successfully',
+    });
+  } catch (error) {
+    console.error('Avatar upload to R2 error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to upload avatar',
+    });
+  }
 });
 
 // @desc    Change user password
