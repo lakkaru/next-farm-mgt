@@ -208,10 +208,10 @@ const seasonPlanSchema = new mongoose.Schema({
         'certification', 'insurance', 'utilities', 'other'
       ],
     },
-    subcategory: {
-      type: String,
-      maxlength: 50,
-    },
+    // subcategory: {
+    //   type: String,
+    //   maxlength: 50,
+    // },
     description: {
       type: String,
       required: true,
@@ -238,19 +238,19 @@ const seasonPlanSchema = new mongoose.Schema({
       type: String,
       maxlength: 100,
     },
-    receiptNumber: {
-      type: String,
-      maxlength: 50,
-    },
-    paymentMethod: {
-      type: String,
-      enum: ['cash', 'bank_transfer', 'check', 'card', 'credit', 'other'],
-      default: 'cash',
-    },
-    remarks: {
-      type: String,
-      maxlength: 500,
-    },
+    // receiptNumber: {
+    //   type: String,
+    //   maxlength: 50,
+    // },
+    // paymentMethod: {
+    //   type: String,
+    //   enum: ['cash', 'bank_transfer', 'check', 'card', 'credit', 'other'],
+    //   default: 'cash',
+    // },
+    // remarks: {
+    //   type: String,
+    //   maxlength: 500,
+    // },
     createdAt: {
       type: Date,
       default: Date.now,

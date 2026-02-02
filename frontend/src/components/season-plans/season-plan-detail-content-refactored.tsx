@@ -55,7 +55,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
   const [harvestDialog, setHarvestDialog] = useState(false)
   const [expenseDialog, setExpenseDialog] = useState(false)
   const [remarkDialog, setRemarkDialog] = useState(false)
-  
+
   // Delete states
   const [deletingFertilizer, setDeletingFertilizer] = useState(false)
   const [fertilizerToDelete, setFertilizerToDelete] = useState(-1)
@@ -124,7 +124,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       setError(null)
       const response = await seasonPlanAPI.getSeasonPlan(planId)
       const planData = response.data.data || response.data
-      
+
       // Transform backend field names
       if (planData.growingStages) {
         planData.growingStages = planData.growingStages.map((stage: {
@@ -145,7 +145,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
           implementationNotes: stage.notes ?? stage.implementationNotes,
         }))
       }
-      
+
       setPlan(planData)
     } catch (err) {
       console.error('Error loading season plan:', err)
@@ -392,7 +392,6 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
         amount: parseFloat(expenseData.amount),
         description: expenseData.description,
         date: expenseData.date,
-        paymentMethod: expenseData.paymentMethod,
       }
 
       let updatedExpenses
@@ -497,7 +496,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
         formData.append('title', remarkData.title.trim())
       }
       formData.append('description', remarkData.description.trim())
-      
+
       // Append image files
       remarkData.images.forEach((file) => {
         formData.append('images', file)
@@ -525,7 +524,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string; errors?: Array<{ field: string; message: string }> } } }
       setUploadingImages(false)
-      
+
       // Show detailed validation errors if available
       if (error.response?.data?.errors && error.response.data.errors.length > 0) {
         const errorMessages = error.response.data.errors.map(e => `${e.field}: ${e.message}`).join(', ')
@@ -552,7 +551,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
 
       // Use the proper backend API that handles R2 cleanup
       const response = await seasonPlanAPI.deleteDailyRemark(planId, remarkId)
-      
+
       // Update plan with the response data
       const updatedPlan = response.data.data || response.data
       setPlan(updatedPlan)
@@ -974,9 +973,9 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                   onChange={handleRemarkImageUpload}
                   className="cursor-pointer flex-1"
                 />
-                <Button 
-                  variant="outline" 
-                  size="icon" 
+                <Button
+                  variant="outline"
+                  size="icon"
                   type="button"
                   onClick={() => document.getElementById('remarkImages')?.click()}
                 >

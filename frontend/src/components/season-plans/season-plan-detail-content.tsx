@@ -55,7 +55,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
   const [harvestDialog, setHarvestDialog] = useState(false)
   const [expenseDialog, setExpenseDialog] = useState(false)
   const [remarkDialog, setRemarkDialog] = useState(false)
-  
+
   // Delete states
   const [deletingFertilizer, setDeletingFertilizer] = useState(false)
   const [fertilizerToDelete, setFertilizerToDelete] = useState(-1)
@@ -98,7 +98,10 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
     amount: '',
     description: '',
     date: new Date().toISOString().split('T')[0],
-    paymentMethod: '',
+    quantity: '',
+    unit: '',
+    unitPrice: '',
+    vendor: '',
   })
 
   const [remarkData, setRemarkData] = useState({
@@ -131,7 +134,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       setError(null)
       const response = await seasonPlanAPI.getSeasonPlan(planId)
       const planData = response.data.data || response.data
-      
+
       // Transform backend field names
       if (planData.growingStages) {
         planData.growingStages = planData.growingStages.map((stage: {
@@ -152,7 +155,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
           implementationNotes: stage.notes ?? stage.implementationNotes,
         }))
       }
-      
+
       setPlan(planData)
     } catch (err) {
       console.error('Error loading season plan:', err)
@@ -375,7 +378,10 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
         amount: expense.amount.toString(),
         description: expense.description || '',
         date: expense.date,
-        paymentMethod: expense.paymentMethod || '',
+        quantity: expense.quantity?.toString() || '',
+        unit: expense.unit || '',
+        unitPrice: expense.unitPrice?.toString() || '',
+        vendor: expense.vendor || '',
       })
     } else {
       setEditingExpense(-1)
@@ -384,7 +390,10 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
         amount: '',
         description: '',
         date: new Date().toISOString().split('T')[0],
-        paymentMethod: '',
+        quantity: '',
+        unit: '',
+        unitPrice: '',
+        vendor: '',
       })
     }
     setExpenseDialog(true)
@@ -394,33 +403,45 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
     if (!plan) return
 
     try {
-      const newExpense = {
+      const expensePayload = {
         category: expenseData.category,
         amount: parseFloat(expenseData.amount),
         description: expenseData.description,
         date: expenseData.date,
-        paymentMethod: expenseData.paymentMethod,
+        quantity: expenseData.quantity ? parseFloat(expenseData.quantity) : undefined,
+        unit: expenseData.unit || undefined,
+        unitPrice: expenseData.unitPrice ? parseFloat(expenseData.unitPrice) : undefined,
+        vendor: expenseData.vendor || undefined,
       }
 
-      let updatedExpenses
+      let response
       if (editingExpense >= 0) {
-        updatedExpenses = [...(plan.expenses || [])]
-        updatedExpenses[editingExpense] = newExpense
+        // Update existing expense
+        const expenseId = plan.expenses?.[editingExpense]._id
+        if (!expenseId) {
+          throw new Error('Expense ID not found')
+        }
+        response = await seasonPlanAPI.updateExpense(planId, expenseId, expensePayload)
       } else {
-        updatedExpenses = [...(plan.expenses || []), newExpense]
+        // Add new expense
+        response = await seasonPlanAPI.addExpense(planId, expensePayload)
       }
 
-      await seasonPlanAPI.updateSeasonPlan(planId, {
-        ...plan,
-        expenses: updatedExpenses,
-      })
-
-      setPlan({ ...plan, expenses: updatedExpenses })
+      // Update plan with the response data
+      const updatedPlan = response.data.data || response.data
+      setPlan(updatedPlan)
       setExpenseDialog(false)
       toast.success(t(editingExpense >= 0 ? 'seasonPlans.expenseUpdated' : 'seasonPlans.expenseAdded'))
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } }
-      toast.error(error.response?.data?.message || t('common.error'))
+      const error = err as { response?: { data?: { message?: string; errors?: Array<{ field: string; message: string }> } } }
+
+      // Show detailed validation errors if available
+      if (error.response?.data?.errors && error.response.data.errors.length > 0) {
+        const errorMessages = error.response.data.errors.map(e => `${e.field}: ${e.message}`).join(', ')
+        toast.error(errorMessages)
+      } else {
+        toast.error(error.response?.data?.message || t('common.error'))
+      }
     }
   }
 
@@ -433,14 +454,16 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
     if (!plan || expenseToDelete < 0) return
 
     try {
-      const updatedExpenses = (plan.expenses || []).filter((_, i) => i !== expenseToDelete)
+      const expenseId = plan.expenses?.[expenseToDelete]._id
+      if (!expenseId) {
+        throw new Error('Expense ID not found')
+      }
 
-      await seasonPlanAPI.updateSeasonPlan(planId, {
-        ...plan,
-        expenses: updatedExpenses,
-      })
+      const response = await seasonPlanAPI.deleteExpense(planId, expenseId)
 
-      setPlan({ ...plan, expenses: updatedExpenses })
+      // Update plan with the response data
+      const updatedPlan = response.data.data || response.data
+      setPlan(updatedPlan)
       setDeletingExpense(false)
       setExpenseToDelete(-1)
       toast.success(t('seasonPlans.expenseDeleted'))
@@ -603,12 +626,12 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       const formData = new FormData()
       formData.append('date', remarkData.date)
       formData.append('description', remarkData.description.trim())
-      
+
       // Only append category if it has a value
       if (remarkData.category && remarkData.category.trim()) {
         formData.append('category', remarkData.category.trim())
       }
-      
+
       // Append image files from remarkImages state
       remarkImages.forEach((image) => {
         formData.append('images', image.file)
@@ -637,7 +660,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string; errors?: Array<{ field: string; message: string }> } } }
       setUploadingImages(false)
-      
+
       // Show detailed validation errors if available
       if (error.response?.data?.errors && error.response.data.errors.length > 0) {
         const errorMessages = error.response.data.errors.map(e => `${e.field}: ${e.message}`).join(', ')
@@ -664,7 +687,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
 
       // Use the proper backend API that handles R2 cleanup
       const response = await seasonPlanAPI.deleteDailyRemark(planId, remarkId)
-      
+
       // Update plan with the response data
       const updatedPlan = response.data.data || response.data
       setPlan(updatedPlan)
@@ -957,10 +980,21 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                 <SelectContent>
                   <SelectItem value="seeds">{t('seasonPlans.expenseCategories.seeds')}</SelectItem>
                   <SelectItem value="fertilizer">{t('seasonPlans.expenseCategories.fertilizer')}</SelectItem>
-                  <SelectItem value="pesticides">{t('seasonPlans.expenseCategories.pesticides')}</SelectItem>
+                  <SelectItem value="pesticide">{t('seasonPlans.expenseCategories.pesticide')}</SelectItem>
+                  <SelectItem value="herbicide">{t('seasonPlans.expenseCategories.herbicide')}</SelectItem>
+                  <SelectItem value="fungicide">{t('seasonPlans.expenseCategories.fungicide')}</SelectItem>
                   <SelectItem value="labor">{t('seasonPlans.expenseCategories.labor')}</SelectItem>
+                  <SelectItem value="machinery">{t('seasonPlans.expenseCategories.machinery')}</SelectItem>
+                  <SelectItem value="fuel">{t('seasonPlans.expenseCategories.fuel')}</SelectItem>
+                  <SelectItem value="irrigation">{t('seasonPlans.expenseCategories.irrigation')}</SelectItem>
+                  <SelectItem value="transportation">{t('seasonPlans.expenseCategories.transportation')}</SelectItem>
                   <SelectItem value="equipment">{t('seasonPlans.expenseCategories.equipment')}</SelectItem>
-                  <SelectItem value="transport">{t('seasonPlans.expenseCategories.transport')}</SelectItem>
+                  <SelectItem value="land_preparation">{t('seasonPlans.expenseCategories.land_preparation')}</SelectItem>
+                  <SelectItem value="harvesting">{t('seasonPlans.expenseCategories.harvesting')}</SelectItem>
+                  <SelectItem value="storage">{t('seasonPlans.expenseCategories.storage')}</SelectItem>
+                  <SelectItem value="certification">{t('seasonPlans.expenseCategories.certification')}</SelectItem>
+                  <SelectItem value="insurance">{t('seasonPlans.expenseCategories.insurance')}</SelectItem>
+                  <SelectItem value="utilities">{t('seasonPlans.expenseCategories.utilities')}</SelectItem>
                   <SelectItem value="other">{t('seasonPlans.expenseCategories.other')}</SelectItem>
                 </SelectContent>
               </Select>
@@ -985,6 +1019,65 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                 onChange={(e) => setExpenseData({ ...expenseData, date: e.target.value })}
               />
             </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="expenseQuantity">{t('seasonPlans.quantity')}</Label>
+                <Input
+                  id="expenseQuantity"
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={expenseData.quantity}
+                  onChange={(e) => setExpenseData({ ...expenseData, quantity: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="expenseUnit">{t('common.unit')}</Label>
+                <Select
+                  value={expenseData.unit}
+                  onValueChange={(value) => setExpenseData({ ...expenseData, unit: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('common.select')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="kg">{t('seasonPlans.units.kg')}</SelectItem>
+                    <SelectItem value="g">g</SelectItem>
+                    <SelectItem value="L">L</SelectItem>
+                    <SelectItem value="ml">ml</SelectItem>
+                    <SelectItem value="units">units</SelectItem>
+                    <SelectItem value="hours">hours</SelectItem>
+                    <SelectItem value="days">days</SelectItem>
+                    <SelectItem value="acres">{t('seasonPlans.units.acres')}</SelectItem>
+                    <SelectItem value="meters">meters</SelectItem>
+                    <SelectItem value="other">{t('seasonPlans.expenseCategories.other')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="expenseUnitPrice">{t('seasonPlans.unitPrice')} (LKR)</Label>
+              <Input
+                id="expenseUnitPrice"
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                value={expenseData.unitPrice}
+                onChange={(e) => setExpenseData({ ...expenseData, unitPrice: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="expenseVendor">{t('seasonPlans.vendor')}</Label>
+              <Input
+                id="expenseVendor"
+                placeholder={t('seasonPlans.vendorPlaceholder')}
+                value={expenseData.vendor}
+                onChange={(e) => setExpenseData({ ...expenseData, vendor: e.target.value })}
+              />
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="expenseDescription">{t('seasonPlans.description')}</Label>
               <Textarea

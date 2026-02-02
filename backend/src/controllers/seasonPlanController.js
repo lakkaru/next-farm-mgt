@@ -11,9 +11,9 @@ const { isAdmin } = require('../middleware/auth');
 const getSeasonPlans = async (req, res) => {
   try {
     const { season, status, farmId } = req.query;
-    
+
     const filter = { userId: req.user.id };
-    
+
     if (season) filter.season = season;
     if (status) filter.status = status;
     if (farmId) filter.farmId = farmId;
@@ -22,7 +22,7 @@ const getSeasonPlans = async (req, res) => {
       .populate('farmId', 'name location district cultivationZone totalArea')
       .populate('paddyVariety', 'name duration type characteristics')
       .sort({ cultivationDate: -1 });
-    
+
     res.json({
       success: true,
       count: plans.length,
@@ -46,7 +46,7 @@ const getSeasonPlan = async (req, res) => {
     const plan = await SeasonPlan.findById(req.params.id)
       .populate('farmId', 'name location district cultivationZone totalArea')
       .populate('paddyVariety', 'name duration type characteristics');
-    
+
     if (!plan) {
       return res.status(404).json({
         success: false,
@@ -111,7 +111,7 @@ const createSeasonPlan = async (req, res) => {
 
     // Get area unit from farm's totalArea.unit
     const areaUnit = farm.totalArea?.unit || 'acres';
-    
+
     // Convert cultivating area to acres for fertilizer calculations
     const cultivatingAreaInAcres = convertToAcres(req.body.cultivatingArea, areaUnit);
 
@@ -131,11 +131,11 @@ const createSeasonPlan = async (req, res) => {
     // a 7-day shock/recovery period for transplanting)
     planData.growingStages = generateGrowingStages(req.body.cultivationDate, paddyVariety.duration, plantingMethod);
 
-  // Determine anchor date: always use cultivationDate as the start date for schedule generation.
-  // NOTE: even for transplanting, the cultivation date (sowing/nursery start) is the reference
-  // for many derived dates. Transplanting date remains a separate event and may be used as
-  // the fertilizer schedule anchor when explicitly required (handled in generateFertilizerSchedule).
-  const anchorDate = req.body.cultivationDate;
+    // Determine anchor date: always use cultivationDate as the start date for schedule generation.
+    // NOTE: even for transplanting, the cultivation date (sowing/nursery start) is the reference
+    // for many derived dates. Transplanting date remains a separate event and may be used as
+    // the fertilizer schedule anchor when explicitly required (handled in generateFertilizerSchedule).
+    const anchorDate = req.body.cultivationDate;
 
     // Optional soil test P (ppm) passed in request body as soilP
     const soilP = req.body.soilP !== undefined ? Number(req.body.soilP) : null;
@@ -157,7 +157,7 @@ const createSeasonPlan = async (req, res) => {
 
     // Set expected harvest date
     let expectedHarvestDate;
-    
+
     if (req.body.expectedHarvest && req.body.expectedHarvest.date) {
       // Use provided expected harvest date
       expectedHarvestDate = new Date(req.body.expectedHarvest.date);
@@ -170,11 +170,11 @@ const createSeasonPlan = async (req, res) => {
         const maxDuration = durationMatch[2] ? parseInt(durationMatch[2]) : minDuration;
         durationDays = Math.round((minDuration + maxDuration) / 2);
       }
-      
+
       expectedHarvestDate = new Date(req.body.cultivationDate);
       expectedHarvestDate.setDate(expectedHarvestDate.getDate() + durationDays);
     }
-    
+
     planData.expectedHarvest = {
       date: expectedHarvestDate,
       estimatedYield: calculateEstimatedYield(cultivatingAreaInAcres, paddyVariety.characteristics?.yield || 4),
@@ -183,11 +183,11 @@ const createSeasonPlan = async (req, res) => {
     // console.log('Creating season plan with data:', JSON.stringify(planData, null, 2));
 
     const plan = await SeasonPlan.create(planData);
-    
+
     const populatedPlan = await SeasonPlan.findById(plan._id)
       .populate('farmId', 'name district cultivationZone')
       .populate('paddyVariety', 'name duration type');
-    
+
     res.status(201).json({
       success: true,
       data: populatedPlan,
@@ -218,7 +218,7 @@ const updateSeasonPlan = async (req, res) => {
     }
 
     const plan = await SeasonPlan.findById(req.params.id);
-    
+
     if (!plan) {
       return res.status(404).json({
         success: false,
@@ -244,7 +244,7 @@ const updateSeasonPlan = async (req, res) => {
       safeBody,
       { new: true, runValidators: true }
     ).populate('farmId', 'name location district cultivationZone totalArea')
-     .populate('paddyVariety', 'name duration type characteristics');
+      .populate('paddyVariety', 'name duration type characteristics');
 
     // If key cultivation parameters changed, regenerate fertilizer schedule
     const shouldRegenerate = ['cultivationDate', 'transplantingDate', 'cultivatingArea', 'irrigationMethod', 'plantingMethod', 'paddyVariety', 'soilP']
@@ -256,10 +256,10 @@ const updateSeasonPlan = async (req, res) => {
       const farm = await Farm.findById(updatedPlan.farmId);
       const paddyVariety = await PaddyVariety.findById(updatedPlan.paddyVariety);
 
-  const plantingMethod = safeBody.plantingMethod || updatedPlan.plantingMethod || 'direct_seeding';
-  // Always use cultivationDate as the schedule anchor. If cultivationDate is being
-  // updated use that, otherwise fall back to the stored cultivationDate.
-  const anchorDate = safeBody.cultivationDate || updatedPlan.cultivationDate;
+      const plantingMethod = safeBody.plantingMethod || updatedPlan.plantingMethod || 'direct_seeding';
+      // Always use cultivationDate as the schedule anchor. If cultivationDate is being
+      // updated use that, otherwise fall back to the stored cultivationDate.
+      const anchorDate = safeBody.cultivationDate || updatedPlan.cultivationDate;
       const soilP = safeBody.soilP !== undefined ? Number(safeBody.soilP) : (updatedPlan.soilP !== undefined ? Number(updatedPlan.soilP) : null);
 
       // Get area unit and convert to acres
@@ -312,7 +312,7 @@ const updateSeasonPlan = async (req, res) => {
 const deleteSeasonPlan = async (req, res) => {
   try {
     const plan = await SeasonPlan.findById(req.params.id);
-    
+
     if (!plan) {
       return res.status(404).json({
         success: false,
@@ -418,7 +418,7 @@ const convertToAcres = (value, unit) => {
     'acres': 1,
     'perches': 0.00625 // 1 perch = 0.00625 acres (160 perches = 1 acre)
   };
-  
+
   const factor = conversionFactors[unit] || 1;
   return value * factor;
 };
@@ -434,14 +434,14 @@ const convertToAcres = (value, unit) => {
 const generateFertilizerSchedule = (cultivationDate, areaInAcres, irrigationMethod, district, durationString, plantingMethod = 'direct_seeding', soilP = null, transplantingDate = null, season = 'maha') => {
   // Convert area from acres to hectares (1 acre = 0.404686 hectares)
   const areaHa = areaInAcres * 0.404686;
-  
+
   // Determine zone based on district
   const wetZoneDistricts = ['Kegalle', 'Gampaha', 'Colombo', 'Galle', 'Kalutara'];
   const isWetZone = wetZoneDistricts.includes(district);
-  
+
   // Determine if irrigated or rainfed - simplified to only two methods
   const isIrrigated = irrigationMethod === 'under_irrigation';
-  
+
   // Extract duration in days and categorize
   let durationDays = 105; // default fallback
   const durationMatch = durationString.match(/(\d+)(?:-(\d+))?/);
@@ -450,7 +450,7 @@ const generateFertilizerSchedule = (cultivationDate, areaInAcres, irrigationMeth
     const maxDuration = durationMatch[2] ? parseInt(durationMatch[2]) : minDuration;
     durationDays = Math.round((minDuration + maxDuration) / 2);
   }
-  
+
   // Categorize duration: 3 months (~90 days), 3.5 months (~105 days), 4 months (~120 days)
   let ageGroup;
   if (durationDays <= 95) {
@@ -483,19 +483,19 @@ const generateFertilizerSchedule = (cultivationDate, areaInAcres, irrigationMeth
 
   // Generate schedule entries, apply soilP rule: if soilP > 10, set tsp to 0
   return selectedRecommendation.schedule.map(app => {
-  // Anchor logic:
-  // - If plantingMethod is 'transplanting' and a transplantingDate is provided, use that
-  //   as the anchor for fertilizer application dates (users plant seedlings into the field
-  //   later than cultivation/nursery date).
-  // - For 'direct_seeding' and 'parachute_seeding' the cultivationDate is the anchor.
-  const anchor = (plantingMethod === 'transplanting' && transplantingDate) ? new Date(transplantingDate) : new Date(cultivationDate);
-  const applicationDate = new Date(anchor);
-  applicationDate.setDate(applicationDate.getDate() + (app.week * 7)); // Convert weeks to days
+    // Anchor logic:
+    // - If plantingMethod is 'transplanting' and a transplantingDate is provided, use that
+    //   as the anchor for fertilizer application dates (users plant seedlings into the field
+    //   later than cultivation/nursery date).
+    // - For 'direct_seeding' and 'parachute_seeding' the cultivationDate is the anchor.
+    const anchor = (plantingMethod === 'transplanting' && transplantingDate) ? new Date(transplantingDate) : new Date(cultivationDate);
+    const applicationDate = new Date(anchor);
+    applicationDate.setDate(applicationDate.getDate() + (app.week * 7)); // Convert weeks to days
 
     const computePerField = (kgPerHa) => Math.round(kgPerHa * areaHa * 100) / 100;
 
     const tspKgPerHa = (soilP !== null && soilP > 10) ? 0 : (app.tsp || 0);
-    
+
     // Apply zinc sulphate only in Maha season
     const zincKgPerHa = applyZincSulphate ? (app.zinc || 0) : 0;
 
@@ -545,7 +545,7 @@ const getDefaultClimateZone = (district) => {
   // This is a simplified mapping - you might want to use your districts constants
   const zoneMapping = {
     'Colombo': 'WL1',
-    'Gampaha': 'WL1', 
+    'Gampaha': 'WL1',
     'Kalutara': 'WL2',
     'Kandy': 'WM1',
     'Matale': 'WM2',
@@ -582,7 +582,7 @@ const updateFertilizerImplementation = async (req, res) => {
     const { applied, implementedDate, notes, actualFertilizers } = req.body;
 
     const plan = await SeasonPlan.findById(id);
-    
+
     if (!plan) {
       return res.status(404).json({
         success: false,
@@ -649,7 +649,7 @@ const updateStageImplementation = async (req, res) => {
     const { completed, notes, actualStartDate, actualEndDate } = req.body;
 
     const plan = await SeasonPlan.findById(id);
-    
+
     if (!plan) {
       return res.status(404).json({
         success: false,
@@ -721,7 +721,7 @@ const updateHarvest = async (req, res) => {
     const { date, actualYield, quality, notes } = req.body;
 
     const plan = await SeasonPlan.findById(id);
-    
+
     if (!plan) {
       return res.status(404).json({
         success: false,
@@ -783,7 +783,7 @@ const addLCCFertilizerApplication = async (req, res) => {
     // console.log('LCC Application Data:', { plantAge, leafColorIndex, recommendedUrea, applicationDate });
 
     const plan = await SeasonPlan.findById(id);
-    
+
     if (!plan) {
       return res.status(404).json({
         success: false,
@@ -877,9 +877,9 @@ const addLCCFertilizerApplication = async (req, res) => {
 const deleteFertilizerApplication = async (req, res) => {
   try {
     const { id, applicationIndex } = req.params;
-    
+
     const plan = await SeasonPlan.findById(id);
-    
+
     if (!plan) {
       return res.status(404).json({
         success: false,
@@ -896,7 +896,7 @@ const deleteFertilizerApplication = async (req, res) => {
     }
 
     const appIndex = parseInt(applicationIndex);
-    
+
     if (appIndex < 0 || appIndex >= plan.fertilizerSchedule.length) {
       return res.status(400).json({
         success: false,
@@ -915,14 +915,14 @@ const deleteFertilizerApplication = async (req, res) => {
 
     // Remove the fertilizer application
     plan.fertilizerSchedule.splice(appIndex, 1);
-    
+
     await plan.save();
-    
+
     // Populate the response
     const populatedPlan = await SeasonPlan.findById(id)
       .populate('farmId', 'name location district cultivationZone totalArea')
       .populate('paddyVariety', 'name duration type characteristics');
-    
+
     res.json({
       success: true,
       data: populatedPlan,
@@ -1013,27 +1013,27 @@ const addDailyRemark = async (req, res) => {
         // Process and upload images to Cloudflare R2
         const uploadPromises = req.files.map(async (file, index) => {
           // console.log(`[MOBILE DEBUG] Processing image ${index + 1}: ${file.originalname} (${file.mimetype}) - Size: ${file.size} bytes`);
-          
+
           // Check if buffer exists and has content
           if (!file.buffer || file.buffer.length === 0) {
             throw new Error(`Image ${file.originalname} has no data or empty buffer`);
           }
-          
+
           // Validate image
           // console.log(`[MOBILE DEBUG] Validating image: ${file.originalname}`);
           const validation = await imageProcessingService.validateImage(
-            file.buffer, 
-            file.mimetype, 
+            file.buffer,
+            file.mimetype,
             file.originalname
           );
-          
+
           if (!validation.isValid) {
             console.error(`[MOBILE DEBUG] Validation failed for ${file.originalname}:`, validation.error);
             throw new Error(`Invalid image ${file.originalname}: ${validation.error}`);
           }
-          
+
           // console.log(`[MOBILE DEBUG] Validation passed for ${file.originalname}`);
-          
+
           // Process image (convert HEIC to JPEG, optimize, resize)
           // console.log(`[MOBILE DEBUG] Starting image processing for ${file.originalname}`);
           const processedImage = await imageProcessingService.processImage(
@@ -1047,13 +1047,13 @@ const addDailyRemark = async (req, res) => {
             },
             file.originalname // Pass filename for better HEIC detection
           );
-          
+
           // console.log(`[MOBILE DEBUG] Image processed: ${file.originalname} - Size: ${processedImage.originalSize} → ${processedImage.processedSize} bytes (${processedImage.compressionRatio}% reduction)`);
-          
+
           // Generate new filename with correct extension
           const fileNameWithoutExt = file.originalname.replace(/\.[^/.]+$/, '');
           const processedFileName = `${fileNameWithoutExt}${processedImage.fileExtension}`;
-          
+
           // console.log(`[MOBILE DEBUG] Uploading to R2 as: ${processedFileName}`);
           // Upload processed image to R2
           const uploadResult = await r2Service.uploadFile(
@@ -1062,9 +1062,9 @@ const addDailyRemark = async (req, res) => {
             processedImage.mimeType,
             'daily-remarks'
           );
-          
+
           // console.log(`[MOBILE DEBUG] Successfully uploaded: ${processedFileName} to R2`);
-          
+
           return {
             filename: uploadResult.key, // R2 key as filename
             originalName: file.originalname, // Keep original name for reference
@@ -1091,7 +1091,7 @@ const addDailyRemark = async (req, res) => {
           statusCode: error.statusCode,
           files: req.files ? req.files.map(f => ({ name: f.originalname, mime: f.mimetype, size: f.size })) : 'no files'
         });
-        
+
         // More specific error messages
         let errorMessage = 'Failed to process and upload images';
         if (error.message.includes('HEIC')) {
@@ -1103,7 +1103,7 @@ const addDailyRemark = async (req, res) => {
         } else if (error.message.includes('buffer') || error.message.includes('empty')) {
           errorMessage = 'Image file appears to be corrupted or empty. Please try uploading a different image.';
         }
-        
+
         return res.status(500).json({
           success: false,
           message: errorMessage,
@@ -1203,18 +1203,18 @@ const updateDailyRemark = async (req, res) => {
         // Process and upload new images to Cloudflare R2
         const uploadPromises = req.files.map(async (file) => {
           // console.log(`Processing image: ${file.originalname} (${file.mimetype})`);
-          
+
           // Validate image
           const validation = await imageProcessingService.validateImage(
-            file.buffer, 
-            file.mimetype, 
+            file.buffer,
+            file.mimetype,
             file.originalname
           );
-          
+
           if (!validation.isValid) {
             throw new Error(`Invalid image ${file.originalname}: ${validation.error}`);
           }
-          
+
           // Process image (convert HEIC to JPEG, optimize, resize)
           const processedImage = await imageProcessingService.processImage(
             file.buffer,
@@ -1227,13 +1227,13 @@ const updateDailyRemark = async (req, res) => {
             },
             file.originalname // Pass filename for better HEIC detection
           );
-          
+
           // console.log(`Image processed: ${file.originalname} - Size: ${processedImage.originalSize} → ${processedImage.processedSize} bytes (${processedImage.compressionRatio}% reduction)`);
-          
+
           // Generate new filename with correct extension
           const fileNameWithoutExt = file.originalname.replace(/\.[^/.]+$/, '');
           const processedFileName = `${fileNameWithoutExt}${processedImage.fileExtension}`;
-          
+
           // Upload processed image to R2
           const uploadResult = await r2Service.uploadFile(
             processedImage.buffer,
@@ -1241,7 +1241,7 @@ const updateDailyRemark = async (req, res) => {
             processedImage.mimeType,
             'daily-remarks'
           );
-          
+
           return {
             filename: uploadResult.key, // R2 key as filename
             originalName: file.originalname, // Keep original name for reference
@@ -1326,7 +1326,7 @@ const deleteDailyRemark = async (req, res) => {
     // Delete associated images from Cloudflare R2
     if (remark.images && remark.images.length > 0) {
       try {
-        const deletePromises = remark.images.map(image => 
+        const deletePromises = remark.images.map(image =>
           r2Service.deleteFile(image.filename)
         );
         await Promise.all(deletePromises);
@@ -1364,20 +1364,20 @@ const removeRemarkImage = async (req, res) => {
   try {
     const { id, remarkId } = req.params;
     const { imageFilename } = req.body;
-    
+
     // console.log('=== REMOVE IMAGE DEBUG ===');
     // console.log('Season plan ID:', id);
     // console.log('Remark ID:', remarkId);
     // console.log('Image filename from body:', imageFilename);
     // console.log('==========================');
-    
+
     if (!imageFilename) {
       return res.status(400).json({
         success: false,
         message: 'Image filename is required',
       });
     }
-    
+
     const plan = await SeasonPlan.findById(id);
     if (!plan) {
       return res.status(404).json({
@@ -1414,7 +1414,7 @@ const removeRemarkImage = async (req, res) => {
 
     // Remove the image from the array
     remark.images.splice(imageIndex, 1);
-    
+
     await plan.save();
 
     // Delete the image from Cloudflare R2
@@ -1460,7 +1460,7 @@ const addExpense = async (req, res) => {
     }
 
     const plan = await SeasonPlan.findById(req.params.id);
-    
+
     if (!plan) {
       return res.status(404).json({
         success: false,
@@ -1476,19 +1476,15 @@ const addExpense = async (req, res) => {
       });
     }
 
-    const { 
-      date, 
-      category, 
-      subcategory,
-      description, 
-      amount, 
+    const {
+      date,
+      category,
+      description,
+      amount,
       quantity,
       unit,
       unitPrice,
-      vendor,
-      receiptNumber,
-      paymentMethod,
-      remarks 
+      vendor
     } = req.body;
 
     // Calculate unit price if not provided
@@ -1500,16 +1496,12 @@ const addExpense = async (req, res) => {
     const newExpense = {
       date: new Date(date),
       category,
-      subcategory,
       description,
       amount: parseFloat(amount),
       quantity: quantity ? parseFloat(quantity) : undefined,
       unit,
       unitPrice: calculatedUnitPrice,
       vendor,
-      receiptNumber,
-      paymentMethod: paymentMethod || 'cash',
-      remarks,
     };
 
     plan.expenses.push(newExpense);
@@ -1553,7 +1545,7 @@ const updateExpense = async (req, res) => {
     }
 
     const plan = await SeasonPlan.findById(req.params.id);
-    
+
     if (!plan) {
       return res.status(404).json({
         success: false,
@@ -1577,19 +1569,15 @@ const updateExpense = async (req, res) => {
       });
     }
 
-    const { 
-      date, 
-      category, 
-      subcategory,
-      description, 
-      amount, 
+    const {
+      date,
+      category,
+      description,
+      amount,
       quantity,
       unit,
       unitPrice,
-      vendor,
-      receiptNumber,
-      paymentMethod,
-      remarks 
+      vendor
     } = req.body;
 
     // Calculate unit price if not provided
@@ -1601,16 +1589,14 @@ const updateExpense = async (req, res) => {
     // Update expense fields
     expense.date = new Date(date);
     expense.category = category;
-    expense.subcategory = subcategory;
+
     expense.description = description;
     expense.amount = parseFloat(amount);
     expense.quantity = quantity ? parseFloat(quantity) : undefined;
     expense.unit = unit;
     expense.unitPrice = calculatedUnitPrice;
     expense.vendor = vendor;
-    expense.receiptNumber = receiptNumber;
-    expense.paymentMethod = paymentMethod || expense.paymentMethod;
-    expense.remarks = remarks;
+
     expense.updatedAt = new Date();
 
     await plan.save();
@@ -1641,7 +1627,7 @@ const updateExpense = async (req, res) => {
 const deleteExpense = async (req, res) => {
   try {
     const plan = await SeasonPlan.findById(req.params.id);
-    
+
     if (!plan) {
       return res.status(404).json({
         success: false,
@@ -1693,7 +1679,7 @@ const deleteExpense = async (req, res) => {
 const getExpenseSummary = async (req, res) => {
   try {
     const plan = await SeasonPlan.findById(req.params.id);
-    
+
     if (!plan) {
       return res.status(404).json({
         success: false,

@@ -382,13 +382,10 @@ router
     ]).withMessage('Invalid expense category'),
     body('description').isLength({ min: 1, max: 200 }).withMessage('Description must be between 1-200 characters'),
     body('amount').isFloat({ min: 0 }).withMessage('Amount must be a positive number'),
-    body('quantity').optional().isFloat({ min: 0 }).withMessage('Quantity must be a positive number'),
-    body('unitPrice').optional().isFloat({ min: 0 }).withMessage('Unit price must be a positive number'),
-    body('subcategory').optional().isLength({ max: 50 }).withMessage('Subcategory must be 50 characters or less'),
-    body('vendor').optional().isLength({ max: 100 }).withMessage('Vendor must be 100 characters or less'),
-    body('receiptNumber').optional().isLength({ max: 50 }).withMessage('Receipt number must be 50 characters or less'),
-    body('paymentMethod').optional().isIn(['cash', 'bank_transfer', 'check', 'card', 'credit', 'other']).withMessage('Invalid payment method'),
-    body('remarks').optional().isLength({ max: 500 }).withMessage('Remarks must be 500 characters or less'),
+    body('quantity').optional({ checkFalsy: true }).isFloat({ min: 0 }).withMessage('Quantity must be a positive number'),
+    body('unit').optional({ checkFalsy: true }).isIn(['kg', 'g', 'L', 'ml', 'units', 'hours', 'days', 'acres', 'meters', 'other']).withMessage('Invalid unit'),
+    body('unitPrice').optional({ checkFalsy: true }).isFloat({ min: 0 }).withMessage('Unit price must be a positive number'),
+    body('vendor').optional({ checkFalsy: true }).isLength({ max: 100 }).withMessage('Vendor must be 100 characters or less'),
   ], addExpense);
 
 router
@@ -405,15 +402,12 @@ router
       'equipment', 'land_preparation', 'harvesting', 'storage',
       'certification', 'insurance', 'utilities', 'other'
     ]).withMessage('Invalid expense category'),
-    body('description').optional().isLength({ min: 1, max: 200 }).withMessage('Description must be between 1-200 characters'),
-    body('amount').optional().isFloat({ min: 0 }).withMessage('Amount must be a positive number'),
-    body('quantity').optional().isFloat({ min: 0 }).withMessage('Quantity must be a positive number'),
-    body('unitPrice').optional().isFloat({ min: 0 }).withMessage('Unit price must be a positive number'),
-    body('subcategory').optional().isLength({ max: 50 }).withMessage('Subcategory must be 50 characters or less'),
-    body('vendor').optional().isLength({ max: 100 }).withMessage('Vendor must be 100 characters or less'),
-    body('receiptNumber').optional().isLength({ max: 50 }).withMessage('Receipt number must be 50 characters or less'),
-    body('paymentMethod').optional().isIn(['cash', 'bank_transfer', 'check', 'card', 'credit', 'other']).withMessage('Invalid payment method'),
-    body('remarks').optional().isLength({ max: 500 }).withMessage('Remarks must be 500 characters or less'),
+    body('description').optional({ checkFalsy: true }).isLength({ min: 1, max: 200 }).withMessage('Description must be between 1-200 characters'),
+    body('amount').optional({ checkFalsy: true }).isFloat({ min: 0 }).withMessage('Amount must be a positive number'),
+    body('quantity').optional({ checkFalsy: true }).isFloat({ min: 0 }).withMessage('Quantity must be a positive number'),
+    body('unit').optional({ checkFalsy: true }).isIn(['kg', 'g', 'L', 'ml', 'units', 'hours', 'days', 'acres', 'meters', 'other']).withMessage('Invalid unit'),
+    body('unitPrice').optional({ checkFalsy: true }).isFloat({ min: 0 }).withMessage('Unit price must be a positive number'),
+    body('vendor').optional({ checkFalsy: true }).isLength({ max: 100 }).withMessage('Vendor must be 100 characters or less'),
   ], updateExpense)
   .delete(deleteExpense);
 
