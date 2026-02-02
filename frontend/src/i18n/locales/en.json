@@ -401,6 +401,9 @@
     "remarks": "remarks",
     "addRemark": "Add Remark",
     "editRemark": "Edit Remark",
+    "noExpenses": "No expenses recorded yet",
+    "noRemarks": "No daily remarks yet",
+    "clickAddToStart": "Click the add button above to get started",
     "implementedOn": "Implemented on",
     "appliedOn": "Applied on",
     "markStageComplete": "Mark Stage as Complete",
@@ -496,6 +499,22 @@
       "labor": "Labor",
       "machinery": "Machinery",
       "irrigation": "Irrigation",
+      "other": "Other"
+    },
+    "remarkCategories": {
+      "general": "General",
+      "weather": "Weather",
+      "pest": "Pest",
+      "disease": "Disease",
+      "fertilizer": "Fertilizer",
+      "irrigation": "Irrigation",
+      "growth": "Growth",
+      "field_preparation": "Field Preparation",
+      "plowing": "Plowing",
+      "seeds_preparation": "Seeds Preparation",
+      "seeding_sowing": "Seeding/Sowing",
+      "transplanting": "Transplanting",
+      "harvesting": "Harvesting",
       "other": "Other"
     },
     "errors": {

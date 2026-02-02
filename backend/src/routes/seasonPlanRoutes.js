@@ -44,7 +44,7 @@ const remarkUpload = multer({
     // Supported image types including HEIC/HEIF with various MIME types
     const supportedTypes = [
       'image/jpeg',
-      'image/jpg', 
+      'image/jpg',
       'image/png',
       'image/gif',
       'image/webp',
@@ -61,39 +61,39 @@ const remarkUpload = multer({
       'image/unknown',
       'application/unknown'
     ];
-    
+
     const mimeType = file.mimetype.toLowerCase();
     const fileName = file.originalname.toLowerCase();
-    
+
     // Define image extensions for validation
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif', '.bmp', '.tiff', '.avif'];
     const hasImageExtension = imageExtensions.some(ext => fileName.endsWith(ext));
-    
+
     // Check by MIME type first
     if (supportedTypes.includes(mimeType)) {
       // console.log('✅ File accepted by MIME type:', mimeType);
       return cb(null, true);
     }
-    
+
     // Mobile devices often send HEIC files with generic MIME types, so check by extension
     if (hasImageExtension) {
       // console.log('✅ File accepted by extension:', fileName, 'with MIME type:', mimeType);
       return cb(null, true);
     }
-    
+
     // Fallback: if MIME type starts with 'image/' accept it
     if (mimeType.startsWith('image/')) {
       // console.log('✅ File accepted as generic image type:', mimeType);
       return cb(null, true);
     }
-    
+
     // console.log('❌ File rejected:', {
     //   originalname: file.originalname,
     //   mimetype: file.mimetype,
     //   hasImageExtension,
     //   reason: 'Unsupported format - not recognized as image'
     // });
-    
+
     return cb(new Error(`Unsupported image format! File: ${file.originalname}, MIME: ${file.mimetype}. Supported formats: JPEG, PNG, GIF, WebP, HEIC, HEIF, BMP, TIFF`), false);
   }
 });
@@ -126,26 +126,27 @@ router.get('/remark-image/*', async (req, res) => {
   // Extract the full path after /remark-image/
   const filename = req.params[0]; // This captures everything after the asterisk
   // console.log('=== IMAGE SERVING DEBUG ===');
-  // console.log('Serving remark image:', filename);
+  console.log('Serving remark image:', filename);
   // console.log('Full URL path:', req.originalUrl);
-  
+
   // Set CORS headers for images
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
-  
+  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+
   try {
     // First, try to find the image in the database to check if it has an R2 URL
     const SeasonPlan = require('../models/SeasonPlan');
-    
+
     // console.log('Searching for image in database...');
     // Search for the image in all season plans
     const seasonPlan = await SeasonPlan.findOne({
       'dailyRemarks.images.filename': filename
     });
-    
+
     // console.log('Season plan found:', !!seasonPlan);
-    
+
     if (seasonPlan) {
       // console.log('Season plan ID:', seasonPlan._id);
       // Find the specific image in the remarks
@@ -162,73 +163,77 @@ router.get('/remark-image/*', async (req, res) => {
           break;
         }
       }
-      
+
       // If image has R2 URL, stream it using R2 service (since R2 bucket is private)
       if (targetImage && targetImage.url) {
         // console.log('Streaming R2 image using R2 service for:', targetImage.filename);
-        
+
         try {
           const r2Service = require('../services/r2Service');
-          
+
           // Use the filename as the R2 key since that's what's stored
           const r2Key = targetImage.filename;
           // console.log('R2 key:', r2Key);
-          
+
           // Get file stream from R2
           const fileData = await r2Service.getFileStream(r2Key);
-          
-          // Set appropriate headers
+
+          // Set appropriate headers including CORS
           res.set({
             'Content-Type': fileData.contentType || 'image/jpeg',
             'Content-Length': fileData.contentLength,
             'Cache-Control': 'public, max-age=31536000', // Cache for 1 year
             'ETag': fileData.etag,
-            'Last-Modified': fileData.lastModified
+            'Last-Modified': fileData.lastModified,
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Cross-Origin-Resource-Policy': 'cross-origin'
           });
-          
+
           // Stream the image
           fileData.stream.pipe(res);
           // console.log('✅ Successfully streamed R2 image via R2 service');
-          return;
-          
+          return fileData;
+
         } catch (error) {
           console.error('❌ Error streaming R2 image:', error.message);
           // Continue to local filesystem fallback
         }
       } else {
-        // console.log('Target image found but no R2 URL available');
+        console.log('Target image found but no R2 URL available');
       }
     } else {
-      // console.log('No season plan found with this image filename');
+      console.log('No season plan found with this image filename');
     }
-    
+
     // Function to check local filesystem as fallback
     function checkLocalFilesystem() {
       const fs = require('fs');
       const imagePath = path.join(__dirname, '../../uploads/remarks', filename);
       // console.log('Trying local filesystem:', imagePath);
-      
+
       if (fs.existsSync(imagePath)) {
         // console.log('Serving legacy image from filesystem');
         return res.sendFile(imagePath);
       }
-      
+
       // Image not found anywhere
       // console.log('Image not found anywhere - filename:', filename);
       // console.log('===========================');
-      return res.status(404).json({ 
+      return res.status(404).json({
         error: 'Image not found',
         message: `Image "${filename}" is no longer available`
       });
     }
-    
+
     // If we reach here, no R2 URL was found, try local filesystem
     checkLocalFilesystem();
-    
+
   } catch (error) {
     console.error('Error serving remark image:', error);
     console.log('===========================');
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Server error',
       message: 'Failed to serve image'
     });
@@ -302,7 +307,7 @@ const handleRemarkUploadErrors = (error, req, res, next) => {
       error: error.code
     });
   }
-  
+
   if (error.message && error.message.includes('Unsupported image format')) {
     return res.status(400).json({
       success: false,
@@ -310,7 +315,7 @@ const handleRemarkUploadErrors = (error, req, res, next) => {
       error: 'UNSUPPORTED_FORMAT'
     });
   }
-  
+
   next(error);
 };
 
@@ -336,11 +341,13 @@ router
   .route('/:id/daily-remarks')
   .post(logDailyRemarksRequest, remarkUpload.array('images', 5), handleRemarkUploadErrors, [
     body('date').isISO8601().withMessage('Valid date is required'),
-    body('category').optional().isIn([
-      'general', 'weather', 'field_preparation', 'pest', 'disease', 'fertilizer', 'irrigation', 'growth',
-      'plowing', 'seeds_preparation', 'seeding_sowing', 'transplanting', 'harvesting', 'other'
-    ]).withMessage('Invalid category'),
-    body('title').optional().isLength({ min: 1, max: 100 }).withMessage('Title must be between 1-100 characters'),
+    body('category').optional({ values: 'falsy' }).custom((value) => {
+      if (!value || value === '') return true;
+      const validCategories = ['general', 'weather', 'field_preparation', 'pest', 'disease', 'fertilizer', 'irrigation', 'growth',
+        'plowing', 'seeds_preparation', 'seeding_sowing', 'transplanting', 'harvesting', 'other'];
+      return validCategories.includes(value);
+    }).withMessage('Invalid category'),
+    body('title').optional({ values: 'falsy' }).isLength({ min: 1, max: 100 }).withMessage('Title must be between 1-100 characters'),
     body('description').isLength({ min: 1, max: 1000 }).withMessage('Description must be between 1-1000 characters'),
   ], addDailyRemark);
 
@@ -348,12 +355,14 @@ router
   .route('/:id/daily-remarks/:remarkId')
   .put(logDailyRemarksRequest, remarkUpload.array('images', 5), handleRemarkUploadErrors, [
     body('date').optional().isISO8601().withMessage('Valid date is required'),
-    body('category').optional().isIn([
-      'general', 'weather', 'field_preparation', 'pest', 'disease', 'fertilizer', 'irrigation', 'growth',
-      'plowing', 'seeds_preparation', 'seeding_sowing', 'transplanting', 'harvesting', 'other'
-    ]).withMessage('Invalid category'),
-    body('title').optional().isLength({ min: 1, max: 100 }).withMessage('Title must be between 1-100 characters'),
-    body('description').optional().isLength({ min: 1, max: 1000 }).withMessage('Description must be between 1-1000 characters'),
+    body('category').optional({ values: 'falsy' }).custom((value) => {
+      if (!value || value === '') return true;
+      const validCategories = ['general', 'weather', 'field_preparation', 'pest', 'disease', 'fertilizer', 'irrigation', 'growth',
+        'plowing', 'seeds_preparation', 'seeding_sowing', 'transplanting', 'harvesting', 'other'];
+      return validCategories.includes(value);
+    }).withMessage('Invalid category'),
+    body('title').optional({ values: 'falsy' }).isLength({ min: 1, max: 100 }).withMessage('Title must be between 1-100 characters'),
+    body('description').optional({ values: 'falsy' }).isLength({ min: 1, max: 1000 }).withMessage('Description must be between 1-1000 characters'),
   ], updateDailyRemark)
   .delete(deleteDailyRemark);
 

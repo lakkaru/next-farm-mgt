@@ -64,6 +64,7 @@ export interface SeasonPlan {
     paymentMethod?: string;
   }>;
   dailyRemarks?: Array<{
+    _id?: string;
     date: string;
     remark: string;
     category?: string;

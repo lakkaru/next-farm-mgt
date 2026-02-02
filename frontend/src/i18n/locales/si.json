@@ -427,6 +427,9 @@
     "remarks": "සටහන්",
     "addRemark": "සටහනක් එක් කරන්න",
     "editRemark": "සටහන සංස්කරණය",
+    "noExpenses": "තවම වියදම් වාර්තා කර නැත",
+    "noRemarks": "තවම දෛනික සටහන් නැත",
+    "clickAddToStart": "ආරම්භ කිරීමට ඉහත එකතු කිරීමේ බොත්තම ක්ලික් කරන්න",
     "implementedOn": "ක්‍රියාත්මක කළ දිනය",
     "scheduled": "සැලසුම් කර ඇත",
     "implemented": "ක්‍රියාත්මක කර ඇත",
@@ -526,6 +529,22 @@
       "labor": "ශ්‍රමය",
       "machinery": "යන්ත්‍රෝපකරණ",
       "irrigation": "ජලාශ්‍රය",
+      "other": "වෙනත්"
+    },
+    "remarkCategories": {
+      "general": "සාමාන්‍ය",
+      "weather": "කාලගුණය",
+      "pest": "පළිබෝධ",
+      "disease": "රෝග",
+      "fertilizer": "පොහොර",
+      "irrigation": "ජලාශ්‍රය",
+      "growth": "වර්ධනය",
+      "field_preparation": "තිස් සකස් කිරීම",
+      "plowing": "මැටිකිරීම",
+      "seeds_preparation": "බීජ සකස් කිරීම",
+      "seeding_sowing": "බීජ වැපිරීම",
+      "transplanting": "පැල සිටුවීම",
+      "harvesting": "අස්වැන්න ගැණීම",
       "other": "වෙනත්"
     },
     "errors": {

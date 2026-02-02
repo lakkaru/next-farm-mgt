@@ -166,11 +166,6 @@ const seasonPlanSchema = new mongoose.Schema({
       ],
       default: 'general',
     },
-    title: {
-      type: String,
-      required: true,
-      maxlength: 100,
-    },
     description: {
       type: String,
       required: true,

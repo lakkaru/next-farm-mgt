@@ -959,8 +959,21 @@ const addDailyRemark = async (req, res) => {
     // }
     // console.log('==========================================\n');
 
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array().map(err => ({
+          field: err.path || err.param,
+          message: err.msg
+        }))
+      });
+    }
+
     const { id } = req.params;
-    const { date, category, title, description } = req.body;
+    const { date, category, description } = req.body;
 
     if (!date || !description) {
       // console.log('[MOBILE DEBUG] Validation failed - missing required fields');
@@ -1107,7 +1120,6 @@ const addDailyRemark = async (req, res) => {
     const newRemark = {
       date: new Date(date),
       category: category || 'general',
-      title: title.trim(),
       description: description.trim(),
       images: imageObjects,
     };
@@ -1140,8 +1152,21 @@ const addDailyRemark = async (req, res) => {
 // @access  Private
 const updateDailyRemark = async (req, res) => {
   try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array().map(err => ({
+          field: err.path || err.param,
+          message: err.msg
+        }))
+      });
+    }
+
     const { id, remarkId } = req.params;
-    const { date, category, title, description } = req.body;
+    const { date, category, description } = req.body;
 
     const plan = await SeasonPlan.findById(id);
     if (!plan) {
@@ -1170,7 +1195,6 @@ const updateDailyRemark = async (req, res) => {
     // Update remark fields if provided
     if (date) remark.date = new Date(date);
     if (category) remark.category = category;
-    if (title) remark.title = title.trim();
     if (description) remark.description = description.trim();
 
     // Handle uploaded images with Cloudflare R2 and image processing

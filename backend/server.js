@@ -51,6 +51,7 @@ uploadDirs.forEach(dir => {
 
 // Security middleware
 app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
   crossOriginEmbedderPolicy: false, // Disable for file uploads
   contentSecurityPolicy: {
     directives: {
@@ -58,6 +59,7 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https:", "http://localhost:3000", "http://localhost:5001"], // Allow connections to backend
     },
   },
 }));
@@ -81,7 +83,7 @@ app.use('/api', limiter);
 // CORS configuration
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
 

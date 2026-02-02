@@ -164,12 +164,26 @@ const loginUser = asyncHandler(async (req, res) => {
   user.resetLoginAttempts();
   await user.save();
 
+  // Generate signed URL for avatar if it exists (same as getUserProfile)
+  let avatarUrl = null;
+  if (user.profile && user.profile.avatar) {
+    const r2Service = require('../services/r2Service');
+    try {
+      avatarUrl = await r2Service.getSignedUrl(user.profile.avatar, 604800); // 7 days
+    } catch (error) {
+      console.error('Error generating signed URL for avatar:', error);
+    }
+  }
+
   res.status(200).json({
     success: true,
     data: {
       _id: user._id,
       email: user.email,
-      profile: user.profile,
+      profile: {
+        ...user.profile.toObject(),
+        avatar: avatarUrl || user.profile.avatar,
+      },
       contact: user.contact,
       role: user.role,
       token: generateToken(user._id),
@@ -255,11 +269,11 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     user.profile.lastName = profile.lastName || user.profile.lastName;
     user.profile.avatar = profile.avatar || user.profile.avatar;
     user.profile.bio = profile.bio !== undefined ? profile.bio : user.profile.bio;
-    
+
     if (profile.dateOfBirth) {
       user.profile.dateOfBirth = new Date(profile.dateOfBirth);
     }
-    
+
     if (profile.gender) {
       user.profile.gender = profile.gender;
     }
@@ -269,7 +283,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   if (req.body.contact) {
     const { contact } = req.body;
     user.contact.phone = contact.phone || user.contact.phone;
-    
+
     if (contact.address) {
       user.contact.address = {
         street: contact.address.street || user.contact.address?.street || '',
@@ -286,7 +300,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     const { preferences } = req.body;
     user.preferences.language = preferences.language || user.preferences.language;
     user.preferences.timezone = preferences.timezone || user.preferences.timezone;
-    
+
     if (preferences.notifications) {
       user.preferences.notifications = {
         email: preferences.notifications.email !== undefined ? preferences.notifications.email : user.preferences.notifications?.email ?? true,
@@ -315,7 +329,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     // Verify current password
     const currentUser = await User.findById(req.user._id).select('+password');
     const isCurrentPasswordValid = await currentUser.matchPassword(req.body.currentPassword);
-    
+
     if (!isCurrentPasswordValid) {
       return res.status(400).json({
         success: false,
@@ -369,7 +383,7 @@ const uploadProfileAvatar = asyncHandler(async (req, res) => {
 
   try {
     const r2Service = require('../services/r2Service');
-    
+
     // Upload to R2 in profile-avatars folder
     const uploadResult = await r2Service.uploadFile(
       req.file.buffer,
@@ -440,7 +454,7 @@ const changePassword = asyncHandler(async (req, res) => {
   // Verify current password
   const isCurrentPasswordValid = await user.matchPassword(currentPassword);
   // console.log('Current password valid:', isCurrentPasswordValid);
-  
+
   if (!isCurrentPasswordValid) {
     return res.status(400).json({
       success: false,
@@ -451,7 +465,7 @@ const changePassword = asyncHandler(async (req, res) => {
   // Check if new password is different from current password
   const isSamePassword = await user.matchPassword(newPassword);
   // console.log('New password same as current:', isSamePassword);
-  
+
   if (isSamePassword) {
     return res.status(400).json({
       success: false,

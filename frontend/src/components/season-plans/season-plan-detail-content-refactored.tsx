@@ -104,17 +104,10 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
   const [remarkData, setRemarkData] = useState({
     date: new Date().toISOString().split('T')[0],
     category: '',
+    title: '',
     description: '',
     images: [] as File[],
   })
-
-  const [remarkImages, setRemarkImages] = useState<Array<{
-    file: File
-    preview: string | null
-    name: string
-    size: number
-    isHeic: boolean
-  }>>([])
 
   const [uploadingImages, setUploadingImages] = useState(false)
 
@@ -458,6 +451,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       setRemarkData({
         date: remark.date,
         category: remark.category || '',
+        title: remark.title || '',
         description: remark.description || remark.remark || '',
         images: [], // New images to upload (existing images are preserved on backend)
       })
@@ -466,131 +460,24 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       setRemarkData({
         date: new Date().toISOString().split('T')[0],
         category: '',
+        title: '',
         description: '',
         images: [],
       })
     }
-    setRemarkImages([])
     setRemarkDialog(true)
   }
 
-  const handleRemarkImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || [])
-    if (files.length === 0) return
-
-    console.log(
-      '[MOBILE DEBUG] Files selected:',
-      files.map((f) => ({
-        name: f.name,
-        size: f.size,
-        type: f.type,
-        lastModified: f.lastModified,
-      })),
-    )
-
-    // Check file sizes (10MB limit per file)
-    const oversizedFiles = files.filter((file) => file.size > 10 * 1024 * 1024)
-    if (oversizedFiles.length > 0) {
-      toast.error(
-        `Some files are too large (>10MB): ${oversizedFiles.map((f) => f.name).join(', ')}`,
-      )
-      event.target.value = ''
-      return
+  const handleRemarkImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setRemarkData({ ...remarkData, images: Array.from(e.target.files) })
     }
-
-    // Check total size for mobile (50MB total limit)
-    const totalSize = files.reduce((sum, file) => sum + file.size, 0)
-    if (totalSize > 50 * 1024 * 1024) {
-      toast.error(
-        `Total file size too large (${Math.round(totalSize / 1024 / 1024)}MB). Please select fewer or smaller images.`,
-      )
-      event.target.value = ''
-      return
-    }
-
-    setUploadingImages(true)
-    const newImages: Array<{
-      file: File
-      preview: string | null
-      name: string
-      size: number
-      isHeic: boolean
-    }> = []
-    let processedCount = 0
-
-    files.forEach((file) => {
-      // Check if file is HEIC/HEIF
-      const isHeic =
-        file.type.toLowerCase().includes('heic') ||
-        file.type.toLowerCase().includes('heif') ||
-        file.name.toLowerCase().endsWith('.heic') ||
-        file.name.toLowerCase().endsWith('.heif')
-
-      if (isHeic) {
-        // For HEIC files, use a placeholder thumbnail
-        newImages.push({
-          file,
-          preview: null, // No preview for HEIC
-          name: file.name,
-          size: file.size,
-          isHeic: true,
-        })
-
-        processedCount++
-        if (processedCount === files.length) {
-          setRemarkImages((prev) => [...prev, ...newImages])
-          setUploadingImages(false)
-        }
-      } else {
-        // For other image formats, generate preview
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          newImages.push({
-            file,
-            preview: e.target?.result as string,
-            name: file.name,
-            size: file.size,
-            isHeic: false,
-          })
-
-          processedCount++
-          if (processedCount === files.length) {
-            setRemarkImages((prev) => [...prev, ...newImages])
-            setUploadingImages(false)
-          }
-        }
-        reader.onerror = () => {
-          // If reading fails, still add the file with no preview
-          newImages.push({
-            file,
-            preview: null,
-            name: file.name,
-            size: file.size,
-            isHeic: false,
-          })
-
-          processedCount++
-          if (processedCount === files.length) {
-            setRemarkImages((prev) => [...prev, ...newImages])
-            setUploadingImages(false)
-          }
-        }
-        reader.readAsDataURL(file)
-      }
-    })
-
-    // Reset file input
-    event.target.value = ''
-  }
-
-  const removeDialogImage = (index: number) => {
-    setRemarkImages((prev) => prev.filter((_, i) => i !== index))
   }
 
   const saveRemark = async () => {
     if (!plan) return
 
-    // Validate required fields per backend schema (date and description are required)
+    // Validate required fields
     if (!remarkData.date || !remarkData.description.trim()) {
       toast.error(t('seasonPlans.remarkValidationError') || 'Date and description are required')
       return
@@ -602,16 +489,18 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       // Create FormData with all remark fields
       const formData = new FormData()
       formData.append('date', remarkData.date)
-      formData.append('description', remarkData.description.trim())
-      
-      // Only append category if it has a value
+      // Only append category and title if they have values
       if (remarkData.category && remarkData.category.trim()) {
         formData.append('category', remarkData.category.trim())
       }
+      if (remarkData.title && remarkData.title.trim()) {
+        formData.append('title', remarkData.title.trim())
+      }
+      formData.append('description', remarkData.description.trim())
       
-      // Append image files from remarkImages state
-      remarkImages.forEach((image) => {
-        formData.append('images', image.file)
+      // Append image files
+      remarkData.images.forEach((file) => {
+        formData.append('images', file)
       })
 
       let response
@@ -631,7 +520,6 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       const updatedPlan = response.data.data || response.data
       setPlan(updatedPlan)
       setRemarkDialog(false)
-      setRemarkImages([])
       setUploadingImages(false)
       toast.success(t(editingRemark >= 0 ? 'seasonPlans.remarkUpdated' : 'seasonPlans.remarkAdded'))
     } catch (err: unknown) {
@@ -1046,30 +934,21 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
             </div>
             <div className="space-y-2">
               <Label htmlFor="remarkCategory">{t('seasonPlans.category')}</Label>
-              <Select
+              <Input
+                id="remarkCategory"
+                placeholder={t('seasonPlans.categoryPlaceholder')}
                 value={remarkData.category}
-                onValueChange={(value) => setRemarkData({ ...remarkData, category: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t('seasonPlans.selectCategory')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="general">{t('seasonPlans.remarkCategories.general')}</SelectItem>
-                  <SelectItem value="weather">{t('seasonPlans.remarkCategories.weather')}</SelectItem>
-                  <SelectItem value="pest">{t('seasonPlans.remarkCategories.pest')}</SelectItem>
-                  <SelectItem value="disease">{t('seasonPlans.remarkCategories.disease')}</SelectItem>
-                  <SelectItem value="fertilizer">{t('seasonPlans.remarkCategories.fertilizer')}</SelectItem>
-                  <SelectItem value="irrigation">{t('seasonPlans.remarkCategories.irrigation')}</SelectItem>
-                  <SelectItem value="growth">{t('seasonPlans.remarkCategories.growth')}</SelectItem>
-                  <SelectItem value="field_preparation">{t('seasonPlans.remarkCategories.field_preparation')}</SelectItem>
-                  <SelectItem value="plowing">{t('seasonPlans.remarkCategories.plowing')}</SelectItem>
-                  <SelectItem value="seeds_preparation">{t('seasonPlans.remarkCategories.seeds_preparation')}</SelectItem>
-                  <SelectItem value="seeding_sowing">{t('seasonPlans.remarkCategories.seeding_sowing')}</SelectItem>
-                  <SelectItem value="transplanting">{t('seasonPlans.remarkCategories.transplanting')}</SelectItem>
-                  <SelectItem value="harvesting">{t('seasonPlans.remarkCategories.harvesting')}</SelectItem>
-                  <SelectItem value="other">{t('seasonPlans.remarkCategories.other')}</SelectItem>
-                </SelectContent>
-              </Select>
+                onChange={(e) => setRemarkData({ ...remarkData, category: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="remarkTitle">{t('seasonPlans.title')}</Label>
+              <Input
+                id="remarkTitle"
+                placeholder={t('seasonPlans.titlePlaceholder')}
+                value={remarkData.title}
+                onChange={(e) => setRemarkData({ ...remarkData, title: e.target.value })}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="remarkDescription">
@@ -1094,44 +973,20 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                   multiple
                   onChange={handleRemarkImageUpload}
                   className="cursor-pointer flex-1"
-                  disabled={uploadingImages}
                 />
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  type="button"
+                  onClick={() => document.getElementById('remarkImages')?.click()}
+                >
+                  <Upload className="h-4 w-4" />
+                </Button>
               </div>
-              {remarkImages.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    {remarkImages.length} {t('seasonPlans.imagesSelected')}
-                  </p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {remarkImages.map((image, index) => (
-                      <div key={index} className="relative group">
-                        {image.preview ? (
-                          <img
-                            src={image.preview}
-                            alt={`Preview ${index + 1}`}
-                            className="w-full h-24 object-cover rounded border"
-                          />
-                        ) : (
-                          <div className="w-full h-24 flex items-center justify-center bg-gray-100 rounded border">
-                            <span className="text-xs text-gray-500">
-                              {image.isHeic ? 'HEIC' : 'Image'}
-                            </span>
-                          </div>
-                        )}
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => removeDialogImage(index)}
-                        >
-                          ×
-                        </Button>
-                        <p className="text-xs truncate mt-1">{image.name}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              {remarkData.images.length > 0 && (
+                <p className="text-sm text-muted-foreground">
+                  {remarkData.images.length} {t('seasonPlans.imagesSelected')}
+                </p>
               )}
             </div>
           </div>
