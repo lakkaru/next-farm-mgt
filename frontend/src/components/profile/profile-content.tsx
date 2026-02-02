@@ -56,8 +56,8 @@ export function ProfileContent() {
 
   useEffect(() => {
     if (user) {
-      console.log('User data in profile:', user)
-      console.log('User avatar:', user.profile?.avatar)
+      // console.log('User data in profile:', user)
+      // console.log('User avatar:', user.profile?.avatar)
       setFormData({
         firstName: user.profile?.firstName || '',
         lastName: user.profile?.lastName || '',
@@ -220,7 +220,7 @@ export function ProfileContent() {
     if (avatarPreview) return avatarPreview
     // Avatar is now stored as a full R2 URL
     if (user?.profile?.avatar) {
-      console.log('Avatar URL from user:', user.profile.avatar)
+      // console.log('Avatar URL from user:', user.profile.avatar)
       return user.profile.avatar
     }
     return null

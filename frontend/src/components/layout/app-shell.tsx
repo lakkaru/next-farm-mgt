@@ -110,8 +110,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const userName = user?.profile
     ? `${user.profile.firstName} ${user.profile.lastName}`
     : 'User'
-  const avatarUrl = user?.profile ? authAPI.getAvatarUrl(null) : null
-
+  const avatarUrl = user?.profile?.avatar || null
+// console.log('Avatar URL in AppShell:', avatarUrl)
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
