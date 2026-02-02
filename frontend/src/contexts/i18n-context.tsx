@@ -15,7 +15,7 @@ if (!i18n.isInitialized) {
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
-      debug: process.env.NODE_ENV === 'development',
+      // debug: process.env.NODE_ENV === 'development',
       load: 'languageOnly',
       fallbackLng: 'en',
       interpolation: {
