@@ -45,6 +45,15 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: '/api/auth/session',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store',
+          },
+        ],
+      },
     ]
   },
   

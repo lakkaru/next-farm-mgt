@@ -46,7 +46,7 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined)
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<string>('en')
-  const [isReady, setIsReady] = useState(false)
+  // const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
     // Get the language from localStorage or use detected language
@@ -61,8 +61,6 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     if (i18n.language !== detectedLng) {
       i18n.changeLanguage(detectedLng)
     }
-    
-    setIsReady(true)
 
     const handleLanguageChange = (lng: string) => {
       setLanguage(lng)

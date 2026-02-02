@@ -69,6 +69,7 @@ export interface SeasonPlan {
     category?: string;
     title?: string;
     description?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     images?: Array<any>;
   }>;
 }
@@ -76,7 +77,10 @@ export interface SeasonPlan {
 export interface Farm {
   _id: string;
   name: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   location?: Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   totalArea?: Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cultivatedArea?: Record<string, any>;
 }

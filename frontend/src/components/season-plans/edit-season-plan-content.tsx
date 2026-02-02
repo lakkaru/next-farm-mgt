@@ -15,46 +15,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Loader2 } from 'lucide-react';
-import { AxiosResponse } from 'axios';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { SeasonPlan } from '@/types/SeasonPlan';
 import { Farm } from '../../types/SeasonPlan';
 
 interface PaddyVariety {
   _id: string;
   name: string;
-}
-
-interface GrowingStage {
-  stage: string;
-  startDate: string;
-  endDate: string;
-  isCompleted: boolean;
-  notes?: string;
-}
-
-interface FertilizerApplication {
-  type: string;
-  amount: number;
-  unit: string;
-  appliedDate: string;
-  applied: boolean;
-  notes?: string;
-}
-
-interface Expense {
-  category: string;
-  amount: number;
-  description: string;
-  date: string;
-}
-
-interface DailyRemark {
-  date: string;
-  remark: string;
 }
 
 interface EditSeasonPlanContentProps {
@@ -144,6 +113,7 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
       toast.success(t('seasonPlans.success.updated'));
       router.push(`/season-plans/${id}`);
     } catch (err) {
+      console.error(err);
       toast.error(t('seasonPlans.errors.updateFailed'));
     } finally {
       setSaving(false);
@@ -154,6 +124,7 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
     setFormData((prev: Partial<SeasonPlan>) => ({ ...prev, [field]: value }));
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addGrowingStage = useCallback(() => {
     setFormData((prev: Partial<SeasonPlan>) => ({
       ...prev,
@@ -169,116 +140,6 @@ export default function EditSeasonPlanContent({ id }: EditSeasonPlanContentProps
     }));
   }, []);
 
-  const removeGrowingStage = useCallback((index: number) => {
-    setFormData((prev: Partial<SeasonPlan>) => ({
-      ...prev,
-      growingStages: prev.growingStages?.filter((_: any, i: number) => i !== index),
-    }));
-  }, []);
-
-  const updateGrowingStage = useCallback((index: number, field: string, value: unknown) => {
-    setFormData((prev: Partial<SeasonPlan>) => ({
-      ...prev,
-      growingStages: prev.growingStages?.map((stage: any, i: number) =>
-        i === index ? { ...stage, [field]: value } : stage
-      ),
-    }));
-  }, []);
-
-  const addFertilizerApplication = useCallback(() => {
-    setFormData((prev: Partial<SeasonPlan>) => ({
-      ...prev,
-      fertilizerSchedule: [
-        ...(prev.fertilizerSchedule || []),
-        {
-          type: '',
-          amount: 0,
-          unit: 'kg',
-          appliedDate: new Date().toISOString().split('T')[0],
-          fertilizerType: '',
-          quantity: 0,
-          applied: false,
-          date: new Date().toISOString().split('T')[0],
-        },
-      ],
-    }));
-  }, []);
-
-  const removeFertilizerApplication = useCallback((index: number) => {
-    setFormData((prev: Partial<SeasonPlan>) => ({
-      ...prev,
-      fertilizerSchedule: prev.fertilizerSchedule?.filter((_: any, i: number) => i !== index),
-    }));
-  }, []);
-
-  const updateFertilizerApplication = useCallback((index: number, field: string, value: unknown) => {
-    setFormData((prev: Partial<SeasonPlan>) => ({
-      ...prev,
-      fertilizerSchedule: prev.fertilizerSchedule?.map((app: any, i: number) =>
-        i === index ? { ...app, [field]: value } : app
-      ),
-    }));
-  }, []);
-
-  const addExpense = useCallback(() => {
-    setFormData((prev: Partial<SeasonPlan>) => ({
-      ...prev,
-      expenses: [
-        ...(prev.expenses || []),
-        {
-          category: 'other',
-          amount: 0,
-          description: '',
-          date: new Date().toISOString().split('T')[0],
-        },
-      ],
-    }));
-  }, []);
-
-  const removeExpense = useCallback((index: number) => {
-    setFormData((prev: Partial<SeasonPlan>) => ({
-      ...prev,
-      expenses: prev.expenses?.filter((_: any, i: number) => i !== index),
-    }));
-  }, []);
-
-  const updateExpense = useCallback((index: number, field: string, value: unknown) => {
-    setFormData((prev: Partial<SeasonPlan>) => ({
-      ...prev,
-      expenses: prev.expenses?.map((exp: any, i: number) =>
-        i === index ? { ...exp, [field]: value } : exp
-      ),
-    }));
-  }, []);
-
-  const addDailyRemark = useCallback(() => {
-    setFormData((prev: Partial<SeasonPlan>) => ({
-      ...prev,
-      dailyRemarks: [
-        ...(prev.dailyRemarks || []),
-        {
-          date: new Date().toISOString().split('T')[0],
-          remark: '',
-        },
-      ],
-    }));
-  }, []);
-
-  const removeDailyRemark = useCallback((index: number) => {
-    setFormData((prev: Partial<SeasonPlan>) => ({
-      ...prev,
-      dailyRemarks: prev.dailyRemarks?.filter((_: any, i: number) => i !== index),
-    }));
-  }, []);
-
-  const updateDailyRemark = useCallback((index: number, field: string, value: unknown) => {
-    setFormData((prev: Partial<SeasonPlan>) => ({
-      ...prev,
-      dailyRemarks: prev.dailyRemarks?.map((remark: any, i: number) =>
-        i === index ? { ...remark, [field]: value } : remark
-      ),
-    }));
-  }, []);
 
   if (loading) {
     return (

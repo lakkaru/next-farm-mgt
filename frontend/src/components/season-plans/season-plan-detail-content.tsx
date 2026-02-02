@@ -52,13 +52,13 @@ import {
   BarChart3,
   Youtube,
   Upload,
-  X,
   Plus,
 } from 'lucide-react'
+import Image from 'next/image'
 import DeleteConfirmationDialog from './dialogs/DeleteConfirmationDialog';
 import StageImplementationDialog from './dialogs/StageImplementationDialog';
 import FertilizerImplementationDialog from './dialogs/FertilizerImplementationDialog';
-import { saveStageImplementation, saveFertilizerImplementation } from './handlers/seasonPlanHandlers';
+// import { saveStageImplementation, saveFertilizerImplementation } from './handlers/seasonPlanHandlers';
 import { SeasonPlan } from '../../types/SeasonPlan';
 
 interface SeasonPlanDetailContentProps {
@@ -72,7 +72,6 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [deleting, setDeleting] = useState(false)
 
   // Stage implementation state
   const [stageDialog, setStageDialog] = useState({ open: false, index: -1 })
@@ -145,7 +144,17 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       
       // Transform backend field names to match frontend interface
       if (planData.growingStages) {
-        planData.growingStages = planData.growingStages.map((stage: any) => ({
+        planData.growingStages = planData.growingStages.map((stage: {
+          completed?: boolean;
+          isCompleted?: boolean;
+          implementedDate?: string;
+          actualStartDate?: string;
+          implementedEndDate?: string;
+          actualEndDate?: string;
+          notes?: string;
+          implementationNotes?: string;
+          [key: string]: unknown;
+        }) => ({
           ...stage,
           isCompleted: stage.completed ?? stage.isCompleted ?? false,
           implementedDate: stage.implementedDate ?? stage.actualStartDate,
@@ -173,7 +182,6 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
 
   const handleDelete = async () => {
     try {
-      setDeleting(true)
       await seasonPlanAPI.deleteSeasonPlan(planId)
       toast.success(t('seasonPlans.success.deleted'))
       router.push('/season-plans')
@@ -181,7 +189,6 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       console.error('Error deleting season plan:', err)
       toast.error(t('seasonPlans.errors.deleteFailed'))
     } finally {
-      setDeleting(false)
       setDeleteDialogOpen(false)
     }
   }
@@ -229,8 +236,9 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       setPlan({ ...plan, growingStages: updatedStages })
       setStageDialog({ open: false, index: -1 })
       toast.success(t(isNewImplementation ? 'seasonPlans.stageMarkedComplete' : 'seasonPlans.stageUpdated'))
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || t('common.error'))
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || t('common.error'))
     }
   }
 
@@ -259,7 +267,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       await seasonPlanAPI.updateSeasonPlan(plan._id, { fertilizerSchedule: updatedFertilizerSchedule });
       setPlan(prev => ({ ...prev, fertilizerSchedule: updatedFertilizerSchedule }));
       setFertilizerDialog({ open: false, index: -1 });
-    } catch (err) {
+    } catch {
       toast.error(t('seasonPlans.errors.updateFailed'));
     }
   }
@@ -284,8 +292,9 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       setDeletingFertilizer(false)
       setFertilizerToDelete(-1)
       toast.success(t('seasonPlans.fertilizerDeleted'))
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || t('common.error'))
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || t('common.error'))
     }
   }
 
@@ -356,8 +365,9 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       setPlan({ ...plan, fertilizerSchedule: updatedFertilizers })
       setLccDialog(false)
       toast.success(t('seasonPlans.lccFertilizerAdded'))
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || t('common.error'))
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || t('common.error'))
     }
   }
 
@@ -399,8 +409,9 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
 
       setHarvestDialog(false)
       toast.success(t('seasonPlans.harvestRecorded'))
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || t('common.error'))
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || t('common.error'))
     }
   }
 
@@ -433,7 +444,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
     if (!plan) return
 
     try {
-      let updatedExpenses = [...(plan.expenses || [])]
+      const updatedExpenses = [...(plan.expenses || [])]
 
       const expense = {
         category: expenseData.category,
@@ -457,8 +468,9 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       setPlan({ ...plan, expenses: updatedExpenses })
       setExpenseDialog(false)
       toast.success(t(editingExpense >= 0 ? 'seasonPlans.expenseUpdated' : 'seasonPlans.expenseAdded'))
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || t('common.error'))
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || t('common.error'))
     }
   }
 
@@ -482,8 +494,9 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       setDeletingExpense(false)
       setExpenseToDelete(-1)
       toast.success(t('seasonPlans.expenseDeleted'))
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || t('common.error'))
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || t('common.error'))
     }
   }
 
@@ -527,7 +540,7 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
 
       // In a real implementation, upload images to S3 or backend
       // For now, we'll just save the remark data
-      let updatedRemarks = [...(plan.dailyRemarks || [])]
+      const updatedRemarks = [...(plan.dailyRemarks || [])]
 
       const remark = {
         date: remarkData.date,
@@ -553,9 +566,10 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       setRemarkDialog(false)
       setUploadingImages(false)
       toast.success(t(editingRemark >= 0 ? 'seasonPlans.remarkUpdated' : 'seasonPlans.remarkAdded'))
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
       setUploadingImages(false)
-      toast.error(err.response?.data?.message || t('common.error'))
+      toast.error(error.response?.data?.message || t('common.error'))
     }
   }
 
@@ -579,8 +593,9 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
       setDeletingRemark(false)
       setRemarkToDelete(-1)
       toast.success(t('seasonPlans.remarkDeleted'))
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || t('common.error'))
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || t('common.error'))
     }
   }
 
@@ -1297,11 +1312,12 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                           {remark.images && remark.images.length > 0 && (
                             <div className="flex gap-2 mt-3">
                               {remark.images.map((img, imgIndex) => (
-                                <img
+                                <Image
                                   key={imgIndex}
                                   src={img}
                                   alt={`Remark ${imgIndex + 1}`}
-                                  className="h-20 w-20 object-cover rounded-lg border"
+                                  width={500}
+                                  height={300}
                                 />
                               ))}
                             </div>

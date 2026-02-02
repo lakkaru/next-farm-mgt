@@ -195,7 +195,7 @@ server {
 Enable the site:
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/farm-mgt /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/farmer.lakkaru.com.conf /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```

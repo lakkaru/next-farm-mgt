@@ -43,8 +43,9 @@ export const saveStageImplementation = async (
     toast.success(
       t(isNewImplementation ? 'seasonPlans.stageMarkedComplete' : 'seasonPlans.stageUpdated')
     );
-  } catch (err: any) {
-    toast.error(err.response?.data?.message || t('common.error'));
+  } catch (err: unknown) {
+    const error = err as { response?: { data?: { message?: string } } };
+    toast.error(error.response?.data?.message || t('common.error'));
   }
 };
 
@@ -81,7 +82,8 @@ export const saveFertilizerImplementation = async (
     toast.success(
       t(isNewApplication ? 'seasonPlans.fertilizerMarkedApplied' : 'seasonPlans.fertilizerUpdated')
     );
-  } catch (err: any) {
-    toast.error(err.response?.data?.message || t('common.error'));
+  } catch (err: unknown) {
+    const error = err as { response?: { data?: { message?: string } } };
+    toast.error(error.response?.data?.message || t('common.error'));
   }
 };
