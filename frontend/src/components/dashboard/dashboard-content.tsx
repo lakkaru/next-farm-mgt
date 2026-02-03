@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/use-auth'
 import { useI18n } from '@/contexts/i18n-context'
+import { cn } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -59,6 +60,7 @@ export function DashboardContent() {
     activeRequests: 0,
   })
   const [activities, setActivities] = useState<Activity[]>([])
+  const [hasFarms, setHasFarms] = useState(false)
 
   const hasRole = (role: string) => {
     if (!user) return false
@@ -120,6 +122,7 @@ export function DashboardContent() {
         ['Accepted', 'In Progress'].includes(r.status)
       ).length
 
+      setHasFarms(farms.length > 0)
       setStats({
         farms: farms.length,
         seasonPlans: seasonPlans.length,
@@ -327,8 +330,11 @@ export function DashboardContent() {
             </Card>
 
             <Card 
-              className="cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
-              onClick={() => handleCardClick('activeSeasons')}
+              className={cn(
+                "cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1",
+                !hasFarms && "opacity-50 cursor-not-allowed"
+              )}
+              onClick={() => hasFarms && handleCardClick('activeSeasons')}
             >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">{t('dashboard.activeSeasons')}</CardTitle>
@@ -341,8 +347,11 @@ export function DashboardContent() {
             </Card>
 
             <Card 
-              className="cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
-              onClick={() => handleCardClick('seasonPlans')}
+              className={cn(
+                "cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1",
+                !hasFarms && "opacity-50 cursor-not-allowed"
+              )}
+              onClick={() => hasFarms && handleCardClick('seasonPlans')}
             >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">{t('dashboard.activeSeasonPlans')}</CardTitle>
@@ -506,12 +515,26 @@ export function DashboardContent() {
                     {t('common.createFarm')}
                   </Button>
                 </Link>
-                <Link href="/season-plans/create" className="block">
-                  <Button variant="outline" className="w-full justify-start gap-2">
+                {hasFarms ? (
+                  <Link href="/season-plans/create" className="block">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start gap-2"
+                    >
+                      <TrendingUp className="h-4 w-4" />
+                      {t('dashboard.planPaddySeason')}
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start gap-2 "
+                    disabled
+                  >
                     <TrendingUp className="h-4 w-4" />
                     {t('dashboard.planPaddySeason')}
                   </Button>
-                </Link>
+                )}
                 <Link href="/paddy/disease-detection" className="block">
                   <Button variant="outline" className="w-full justify-start gap-2 text-red-600 border-red-200 hover:bg-red-50">
                     <Bug className="h-4 w-4" />
