@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
+import Image from 'next/image'
 import { seasonPlanAPI } from '@/lib/api'
 import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -14,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Accordion } from '@/components/ui/accordion'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { AlertCircle, Upload } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 import DeleteConfirmationDialog from './dialogs/DeleteConfirmationDialog'
 import StageImplementationDialog from './dialogs/StageImplementationDialog'
 import FertilizerImplementationDialog from './dialogs/FertilizerImplementationDialog'
@@ -378,10 +379,10 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
         amount: expense.amount.toString(),
         description: expense.description || '',
         date: expense.date,
-        quantity: expense.quantity?.toString() || '',
-        unit: expense.unit || '',
-        unitPrice: expense.unitPrice?.toString() || '',
-        vendor: expense.vendor || '',
+        quantity: '',
+        unit: '',
+        unitPrice: '',
+        vendor: '',
       })
     } else {
       setEditingExpense(-1)
@@ -408,20 +409,18 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
         amount: parseFloat(expenseData.amount),
         description: expenseData.description,
         date: expenseData.date,
-        quantity: expenseData.quantity ? parseFloat(expenseData.quantity) : undefined,
-        unit: expenseData.unit || undefined,
-        unitPrice: expenseData.unitPrice ? parseFloat(expenseData.unitPrice) : undefined,
-        vendor: expenseData.vendor || undefined,
+        paymentMethod: undefined,
       }
 
       let response
       if (editingExpense >= 0) {
-        // Update existing expense
-        const expenseId = plan.expenses?.[editingExpense]._id
-        if (!expenseId) {
-          throw new Error('Expense ID not found')
-        }
-        response = await seasonPlanAPI.updateExpense(planId, expenseId, expensePayload)
+        // Update existing expense by index
+        const updatedExpenses = [...(plan.expenses || [])]
+        updatedExpenses[editingExpense] = expensePayload
+        response = await seasonPlanAPI.updateSeasonPlan(planId, {
+          ...plan,
+          expenses: updatedExpenses,
+        })
       } else {
         // Add new expense
         response = await seasonPlanAPI.addExpense(planId, expensePayload)
@@ -454,12 +453,13 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
     if (!plan || expenseToDelete < 0) return
 
     try {
-      const expenseId = plan.expenses?.[expenseToDelete]._id
-      if (!expenseId) {
-        throw new Error('Expense ID not found')
-      }
-
-      const response = await seasonPlanAPI.deleteExpense(planId, expenseId)
+      // Remove expense by index from the array
+      const updatedExpenses = plan.expenses?.filter((_, index) => index !== expenseToDelete) || []
+      
+      const response = await seasonPlanAPI.updateSeasonPlan(planId, {
+        ...plan,
+        expenses: updatedExpenses,
+      })
 
       // Update plan with the response data
       const updatedPlan = response.data.data || response.data
@@ -1199,9 +1199,11 @@ export function SeasonPlanDetailContent({ planId }: SeasonPlanDetailContentProps
                     {remarkImages.map((image, index) => (
                       <div key={index} className="relative group">
                         {image.preview ? (
-                          <img
+                          <Image
                             src={image.preview}
                             alt={`Preview ${index + 1}`}
+                            width={96}
+                            height={96}
                             className="w-full h-24 object-cover rounded border"
                           />
                         ) : (

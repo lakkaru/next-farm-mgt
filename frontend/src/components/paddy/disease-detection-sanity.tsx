@@ -69,7 +69,8 @@ export function DiseaseDetectionContent() {
     }
 
     const getCategoryIcon = (iconName?: string) => {
-        const icons: { [key: string]: any } = {
+        type IconType = React.FC<{ className?: string }>
+        const icons: { [key: string]: IconType } = {
             Leaf,
             Bug,
             Droplets,
