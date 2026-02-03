@@ -1,0 +1,24 @@
+{
+    "name": "farm-management-sanity",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Sanity Studio for Farm Management Disease Database",
+    "scripts": {
+        "dev": "sanity dev",
+        "start": "sanity start",
+        "build": "sanity build"
+    },
+    "dependencies": {
+        "@sanity/image-url": "^1.0.2",
+        "@sanity/vision": "^3.62.0",
+        "next-sanity": "^9.8.18",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "sanity": "^3.62.0",
+        "styled-components": "^6.3.8"
+    },
+    "devDependencies": {
+        "@types/react": "^18.2.0",
+        "typescript": "^5.4.0"
+    }
+}
