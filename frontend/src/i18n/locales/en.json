@@ -1030,6 +1030,9 @@
       "other": "Other"
     }
   },
+  "paddy": {
+    "requiresFarm": "Please create a farm first to access paddy features"
+  },
   "paddyVarieties": {
     "addNew": "Add New Variety",
     "editVariety": "Edit Variety",

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/hooks/use-auth'
 import { useI18n } from '@/contexts/i18n-context'
+import { farmAPI } from '@/lib/api'
 import { getInitials } from '@/lib/utils'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import {
@@ -90,9 +91,31 @@ const navItems: NavItem[] = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [hasFarms, setHasFarms] = useState(false)
+  const [checkingFarms, setCheckingFarms] = useState(true)
   const pathname = usePathname()
   const { user, logout, isAuthenticated, isLoading } = useAuth()
   const { t } = useI18n()
+
+  // Fetch user's farms on mount
+  useEffect(() => {
+    if (!isAuthenticated || isLoading) return
+
+    const fetchFarms = async () => {
+      try {
+        const response = await farmAPI.getFarms()
+        const farms = response.data?.data || []
+        setHasFarms(farms.length > 0)
+      } catch (error) {
+        console.error('Error fetching farms:', error)
+        setHasFarms(false)
+      } finally {
+        setCheckingFarms(false)
+      }
+    }
+
+    fetchFarms()
+  }, [isAuthenticated, isLoading])
 
   const hasRole = (roles?: string[]) => {
     if (!roles || roles.length === 0) return true
@@ -173,19 +196,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {navItems.map((item) => {
               if (!hasRole(item.roles)) return null
 
+              // Disable Paddy menu if user has no farms
+              const isPaddyMenu = item.title === 'navigation.paddy'
+              const isPaddyDisabled = isPaddyMenu && !hasFarms && !checkingFarms
+
               if (item.children) {
                 return (
                   <li key={item.href}>
                     <div
                       className={cn(
-                        'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground',
+                        'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium',
+                        isPaddyDisabled
+                          ? 'text-muted-foreground/50 cursor-not-allowed'
+                          : 'text-muted-foreground',
                         !sidebarOpen && 'justify-center'
                       )}
                     >
                       <item.icon className="h-5 w-5 shrink-0" />
                       {sidebarOpen && <span>{t(item.title)}</span>}
                     </div>
-                    {sidebarOpen && (
+                    {sidebarOpen && !isPaddyDisabled && (
                       <ul className="ml-6 mt-1 space-y-1">
                         {item.children.map((child) => (
                           <li key={child.href}>
