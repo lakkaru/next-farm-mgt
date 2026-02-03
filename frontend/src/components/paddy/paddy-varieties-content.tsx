@@ -175,6 +175,20 @@ export function PaddyVarietiesContent() {
     return arr.findIndex(s => getTranslatedGrainShape(s) === translatedValue) === index
   })
 
+  // Format paddy name for RRDI URL (lowercase, no spaces)
+  const formatPaddyNameForUrl = (name: string): string => {
+    return name.toLowerCase().replace(/\s+/g, '')
+  }
+
+  // Handle View button click - open RRDI link in new tab
+  const handleViewPaddy = (e: React.MouseEvent, paddyName: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const formattedName = formatPaddyNameForUrl(paddyName)
+    const url = `https://doa.gov.lk/rrdi_rice_${formattedName}/`
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
   if (error && !loading) {
     return (
       <div className="space-y-6">
@@ -338,8 +352,7 @@ export function PaddyVarietiesContent() {
       {!loading && filteredVarieties.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredVarieties.map((variety) => (
-            <Link key={variety._id} href={`/paddy/varieties/${variety._id}`}>
-              <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
+            <Card key={variety._id} className="h-full hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1">
@@ -431,14 +444,18 @@ export function PaddyVarietiesContent() {
                     )}
 
                   {/* View Details Button */}
-                  <Button variant="outline" className="w-full mt-4" size="sm">
+                  <Button
+                    variant="outline"
+                    className="w-full mt-4"
+                    size="sm"
+                    onClick={(e) => handleViewPaddy(e, variety.name)}
+                  >
                     {t('common.view')}
                   </Button>
                 </CardContent>
               </Card>
-            </Link>
-          ))}
-        </div>
+            ))}
+          </div>
       )}
     </div>
   )
