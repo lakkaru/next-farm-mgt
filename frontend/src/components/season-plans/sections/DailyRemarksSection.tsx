@@ -105,9 +105,11 @@ export function DailyRemarksSection({
                                 onClick={() => window.open(imageUrl, '_blank')}
                                 title={img.originalName || img.filename || `Image ${imgIndex + 1}`}
                               >
-                                <img
+                                <Image
                                   src={imageUrl}
                                   alt={img.originalName || `Remark ${imgIndex + 1}`}
+                                  width={200}
+                                  height={150}
                                   className="w-[200px] h-[150px] object-cover bg-gray-100"
                                   onLoad={() => {
                                     console.log('✅ Image loaded successfully:', imageUrl);

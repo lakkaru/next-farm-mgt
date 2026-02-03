@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/hooks/use-auth'
 import { useI18n } from '@/contexts/i18n-context'
-import { authAPI } from '@/lib/api'
 import { getInitials } from '@/lib/utils'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import {

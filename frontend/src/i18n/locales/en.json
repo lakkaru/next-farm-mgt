@@ -1133,8 +1133,8 @@
     }
   },
   "diseaseDetection": {
-    "title": "Rice Plant Nutritional Deficiencies",
-    "subtitle": "Learn to identify and treat common nutritional deficiencies in rice plants",
+    "title": "Rice Farming Disease & Deficiency Management",
+    "subtitle": "Comprehensive guide to identify, manage, and prevent rice plant diseases and nutritional deficiencies",
     "uploadImage": "Upload Leaf Image",
     "detectDisease": "Detect Disease",
     "analyzing": "Analyzing image...",
@@ -1143,10 +1143,11 @@
     "noImageSelected": "Please select an image first",
     "analysisComplete": "Disease analysis complete!",
     "aiNoteTitle": "Note:",
-    "aiNote": "Below you'll find comprehensive information about common nutritional deficiencies and their treatments. AI-powered disease detection coming soon.",
+    "aiNote": "Below you'll find comprehensive information about common rice diseases, deficiencies, and their management strategies. AI-powered disease detection coming soon.",
     "viewCompleteGuide": "View Complete Guide",
     "deficiencyGuide": "Complete Guide",
     "deficiencyLabel": "Deficiency",
+    "allCategories": "All",
     "keySymptomsLabel": "Key Symptoms:",
     "severity": {
       "highImpact": "High Impact",

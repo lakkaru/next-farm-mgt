@@ -69,7 +69,8 @@ export function DiseaseDetectionContent() {
     }
 
     const getCategoryIcon = (iconName?: string) => {
-        const icons: { [key: string]: any } = {
+        type IconType = React.FC<{ className?: string }>
+        const icons: { [key: string]: IconType } = {
             Leaf,
             Bug,
             Droplets,
@@ -117,7 +118,7 @@ export function DiseaseDetectionContent() {
                 <TabsList className="w-full justify-start overflow-x-auto flex-wrap h-auto">
                     <TabsTrigger value="all" className="gap-2">
                         <Leaf className="h-4 w-4" />
-                        All
+                        {t('diseaseDetection.allCategories')}
                     </TabsTrigger>
                     {categories.map((category) => {
                         const Icon = getCategoryIcon(category.icon)
@@ -220,7 +221,7 @@ export function DiseaseDetectionContent() {
                         <div className="text-center py-12">
                             <Leaf className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                             <p className="text-muted-foreground">
-                                No diseases found in this category yet.
+                                No diseases or deficiencies found in this category yet.
                             </p>
                         </div>
                     )}
