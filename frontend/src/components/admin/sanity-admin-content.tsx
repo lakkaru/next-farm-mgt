@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -942,10 +943,11 @@ export function SanityAdminContent() {
                                 />
                                 {(diseaseForm.mainImagePreview || diseaseForm.mainImage) && (
                                     <div className="relative w-32 h-32 border rounded overflow-hidden bg-gray-100">
-                                        <img
+                                        <Image
                                             src={diseaseForm.mainImagePreview}
                                             alt="Main preview"
-                                            className="w-full h-full object-cover"
+                                            fill
+                                            className="object-cover"
                                         />
                                         <button
                                             type="button"
@@ -983,10 +985,11 @@ export function SanityAdminContent() {
                                                 key={index}
                                                 className="relative w-24 h-24 border rounded overflow-hidden bg-gray-100"
                                             >
-                                                <img
+                                                <Image
                                                     src={preview}
                                                     alt={`Additional ${index + 1}`}
-                                                    className="w-full h-full object-cover"
+                                                    fill
+                                                    className="object-cover"
                                                 />
                                                 <button
                                                     type="button"
